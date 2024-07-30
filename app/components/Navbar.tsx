@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import styles from './Navbar.module.scss';
 import { useState } from 'react';
 
@@ -25,7 +26,9 @@ export default function Navbar({
 
 	return (
 		<nav className={showNavbar ? styles['navbar'] : styles['navbar-hidden']}>
-			<div className='hidden sm:inline-block my-auto'>SyncVid</div>
+			<Link className='hidden sm:inline-block my-auto' href={'/'}>
+				SyncVid
+			</Link>
 			<form
 				className='h-full flex flex-row justify-between gap-2'
 				onSubmit={(e) => e.preventDefault()}
