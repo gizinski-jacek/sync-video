@@ -1,5 +1,31 @@
-import styles from './page.module.scss';
+'use client';
 
-export default function Home() {
-	return <main className={styles.main}></main>;
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+
+export default function App() {
+	const router = useRouter();
+
+	async function handleCreateRoom(e: React.MouseEvent<HTMLButtonElement>) {
+		try {
+			e.preventDefault();
+			const res = await axios.get(
+				`${process.env.NEXT_PUBLIC_API_URI}/api/create-room`,
+				{
+					timeout: 15000,
+				}
+			);
+			router.push(`room/${res.data.roomId}`);
+		} catch (error: unknown) {
+			console.log(error);
+		}
+	}
+
+	return (
+		<div>
+			<button type='button' onClick={handleCreateRoom}>
+				Create Room
+			</button>
+		</div>
+	);
 }
