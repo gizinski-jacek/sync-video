@@ -1,0 +1,54 @@
+.main {
+	flex: 1;
+	width: 100%;
+	transition: all 0.5s ease;
+	background-color: theme('colors.slate.900');
+}
+
+.video {
+	min-width: calc(440px - 2rem);
+	height: auto;
+
+	&:hover .close-video {
+		opacity: 1 !important;
+	}
+
+	.close-video {
+		position: absolute;
+		top: 0;
+		right: 0;
+		z-index: 50;
+		cursor: pointer;
+		opacity: 0;
+		transition: all 0.25s ease;
+		transition-delay: 0.25s;
+	}
+}
+
+.error {
+	width: fit-content;
+	height: fit-content;
+	margin: auto;
+	padding: 1rem;
+	font-size: 2rem;
+	font-weight: bold;
+	text-align: center;
+	color: var(--bs-dark);
+	background-color: var(--bs-danger);
+	border-radius: 0.5rem;
+	cursor: pointer;
+}
+
+.error-absolute {
+	@extend .error;
+	width: unset;
+	height: unset;
+	padding: 0.25rem;
+	border-width: 0.25rem;
+	border-radius: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 200;
+}
