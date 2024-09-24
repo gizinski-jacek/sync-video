@@ -1,9 +1,12 @@
 import Link from 'next/link';
 import styles from './Navbar.module.scss';
 import { useState } from 'react';
+import { Hosts, VideoData } from '../libs/types';
 
 interface Props {
-	addVideo: (video: string) => void;
+	searchVideo: (host: Hosts, string: string) => void;
+	searchResults: VideoData[] | null;
+	addVideo: (video: VideoData) => void;
 	showNavbar: boolean;
 	toggleNavbar: () => void;
 	showChat: boolean;
@@ -11,6 +14,8 @@ interface Props {
 }
 
 export default function Navbar({
+	searchVideo,
+	searchResults,
 	addVideo,
 	showNavbar,
 	toggleNavbar,
@@ -26,15 +31,15 @@ export default function Navbar({
 
 	return (
 		<nav className={showNavbar ? styles['navbar'] : styles['navbar-hidden']}>
-			<Link className='hidden sm:inline-block my-auto' href={'/'}>
+			<Link className='inline-block my-auto' href={'/'}>
 				SyncVid
 			</Link>
 			<form
-				className='h-full flex flex-row justify-between gap-2'
+				className='flex-1 flex flex-row justify-between gap-2 relative max-w-[360px]'
 				onSubmit={(e) => e.preventDefault()}
 			>
 				<input
-					className='rounded bg-slate-900 h-full px-1 text-base max-w-[120px] md:max-w-[200px]'
+					className='flex-1 rounded bg-slate-900 px-1 text-base'
 					id='input'
 					name='input'
 					type='text'
@@ -43,7 +48,7 @@ export default function Navbar({
 				/>
 				<div
 					className='p-1 cursor-pointer'
-					onClick={() => addVideo(input as any)}
+					onClick={() => searchVideo('youtube', input)}
 				>
 					<svg
 						width='24px'
@@ -66,22 +71,22 @@ export default function Navbar({
 						</g>
 					</svg>
 				</div>
+				{searchResults && searchResults.length > 0 && (
+					<ul className='absolute top-full left-0 right-0 z-50 max-w-[320px] flex flex-col gap-2 p-2 border-2 border-gray-400 rounded bg-slate-900 text-xs'>
+						{searchResults.map((result) => (
+							<li
+								key={result.id}
+								className='p-1 border rounded transition-all hover:bg-slate-800 cursor-pointer'
+								onClick={() => addVideo(result)}
+							>
+								{result.title}
+							</li>
+						))}
+					</ul>
+				)}
 			</form>
 			<div className='p-1 cursor-pointer' onClick={toggleSidebar}>
 				{showChat ? (
-					<svg
-						width='24px'
-						viewBox='0 0 24 24'
-						fill='#ffffff'
-						xmlns='http://www.w3.org/2000/svg'
-					>
-						<g strokeWidth='0'></g>
-						<g strokeLinecap='round' strokeLinejoin='round'></g>
-						<g>
-							<path d='M8,7,2,11V3ZM3,14.5H21a1,1,0,0,0,0-2H3a1,1,0,0,0,0,2ZM10,7a1,1,0,0,0,1,1H21a1,1,0,0,0,0-2H11A1,1,0,0,0,10,7ZM3,21H21a1,1,0,0,0,0-2H3a1,1,0,0,0,0,2Z'></path>
-						</g>
-					</svg>
-				) : (
 					<svg
 						width='24px'
 						viewBox='0 0 20 20'
@@ -92,6 +97,19 @@ export default function Navbar({
 						<g strokeLinecap='round' strokeLinejoin='round'></g>
 						<g>
 							<path d='M17 11v3l-3-3H8a2 2 0 0 1-2-2V2c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-1zm-3 2v2a2 2 0 0 1-2 2H6l-3 3v-3H2a2 2 0 0 1-2-2V8c0-1.1.9-2 2-2h2v3a4 4 0 0 0 4 4h6z'></path>
+						</g>
+					</svg>
+				) : (
+					<svg
+						width='24px'
+						viewBox='0 0 24 24'
+						fill='#ffffff'
+						xmlns='http://www.w3.org/2000/svg'
+					>
+						<g strokeWidth='0'></g>
+						<g strokeLinecap='round' strokeLinejoin='round'></g>
+						<g>
+							<path d='M8,7,2,11V3ZM3,14.5H21a1,1,0,0,0,0-2H3a1,1,0,0,0,0,2ZM10,7a1,1,0,0,0,1,1H21a1,1,0,0,0,0-2H11A1,1,0,0,0,10,7ZM3,21H21a1,1,0,0,0,0-2H3a1,1,0,0,0,0,2Z'></path>
 						</g>
 					</svg>
 				)}
