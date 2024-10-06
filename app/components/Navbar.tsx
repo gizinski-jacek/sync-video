@@ -1,11 +1,14 @@
 import Link from 'next/link';
 import styles from './Navbar.module.scss';
-import { useState } from 'react';
-import { Hosts, VideoData } from '../libs/types';
+import { useEffect, useRef, useState } from 'react';
+import { VideoData } from '../libs/types';
+import Loading from './Loading';
 
 interface Props {
-	searchVideo: (host: Hosts, string: string) => void;
+	fetching: boolean;
+	searchVideo: (url: string) => void;
 	searchResults: VideoData[] | null;
+	clearSearchResults: () => void;
 	addVideo: (video: VideoData) => void;
 	showNavbar: boolean;
 	toggleNavbar: () => void;
@@ -14,8 +17,10 @@ interface Props {
 }
 
 export default function Navbar({
+	fetching,
 	searchVideo,
 	searchResults,
+	clearSearchResults,
 	addVideo,
 	showNavbar,
 	toggleNavbar,
@@ -24,9 +29,46 @@ export default function Navbar({
 }: Props) {
 	const [input, setInput] = useState<string>('');
 
+	const searchRef = useRef<HTMLFormElement>(null);
+
+	useEffect(() => {
+		const handleOutsideClick = (event: MouseEvent) => {
+			if (!searchRef.current?.contains(event.target as Node)) {
+				clearSearchResults();
+			}
+		};
+		window.addEventListener('click', handleOutsideClick);
+
+		return () => {
+			window.removeEventListener('click', handleOutsideClick);
+		};
+	}, [searchRef, clearSearchResults]);
+
 	function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+		if (e.type === 'keydown') return;
 		const { value } = e.target;
 		setInput(value);
+		if (value) {
+			searchVideo(input);
+		} else {
+			clearSearchResults();
+		}
+	}
+
+	function handleInputEnterKey(e: React.KeyboardEvent<HTMLInputElement>) {
+		if (e.type === 'change') return;
+		if (e.key === 'Enter') searchVideo(input);
+	}
+
+	function handleInputFocus(e: React.FocusEvent<HTMLInputElement>) {
+		if (input) {
+			searchVideo(input);
+		}
+	}
+
+	function handlePasteEvent(e: React.ClipboardEvent<HTMLInputElement>) {
+		const value = e.clipboardData.getData('text/plain');
+		searchVideo(value);
 	}
 
 	return (
@@ -35,6 +77,7 @@ export default function Navbar({
 				SyncVid
 			</Link>
 			<form
+				ref={searchRef}
 				className='flex-1 flex flex-row justify-between gap-2 relative max-w-[360px]'
 				onSubmit={(e) => e.preventDefault()}
 			>
@@ -45,11 +88,11 @@ export default function Navbar({
 					type='text'
 					value={input}
 					onChange={handleInputChange}
+					onKeyDown={handleInputEnterKey}
+					onFocus={handleInputFocus}
+					onPaste={handlePasteEvent}
 				/>
-				<div
-					className='p-1 cursor-pointer'
-					onClick={() => searchVideo('youtube', input)}
-				>
+				<div className='p-1 cursor-pointer' onClick={() => searchVideo(input)}>
 					<svg
 						width='24px'
 						viewBox='0 -0.5 25 25'
@@ -71,8 +114,12 @@ export default function Navbar({
 						</g>
 					</svg>
 				</div>
-				{searchResults && searchResults.length > 0 && (
+				{fetching ? (
 					<ul className='absolute top-full left-0 right-0 z-50 max-w-[320px] flex flex-col gap-2 p-2 border-2 border-gray-400 rounded bg-slate-900 text-xs'>
+						<Loading styleClass='mx-auto w-[80px] h-[80px]' />
+					</ul>
+				) : searchResults && searchResults?.length > 0 ? (
+					<ul className='absolute top-full left-[-25%] right-[-25%] flex max-w-[540px] z-50 flex-col gap-2 p-2 border-2 border-gray-400 rounded bg-slate-900 text-xs'>
 						{searchResults.map((result) => (
 							<li
 								key={result.id}
@@ -83,7 +130,7 @@ export default function Navbar({
 							</li>
 						))}
 					</ul>
-				)}
+				) : null}
 			</form>
 			<div className='p-1 cursor-pointer' onClick={toggleSidebar}>
 				{showChat ? (
