@@ -45,8 +45,7 @@ export default function Navbar({
 	}, [searchRef, clearSearchResults]);
 
 	function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-		if (e.type === 'keydown') return;
-		const { value } = e.target;
+		const value = e.target.value.trim();
 		setInput(value);
 		if (value) {
 			searchVideo(input);
@@ -56,8 +55,10 @@ export default function Navbar({
 	}
 
 	function handleInputEnterKey(e: React.KeyboardEvent<HTMLInputElement>) {
-		if (e.type === 'change') return;
-		if (e.key === 'Enter') searchVideo(input);
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			searchVideo(input);
+		}
 	}
 
 	function handleInputFocus(e: React.FocusEvent<HTMLInputElement>) {
@@ -86,6 +87,8 @@ export default function Navbar({
 					id='input'
 					name='input'
 					type='text'
+					minLength={16}
+					maxLength={256}
 					value={input}
 					onChange={handleInputChange}
 					onKeyDown={handleInputEnterKey}
