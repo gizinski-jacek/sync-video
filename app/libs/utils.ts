@@ -2,14 +2,23 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import { NextResponse } from 'next/server';
 import { Hosts, VideoData } from './types';
 
+export function extractHostName(url: string): Hosts | undefined {
+	const regex = /(\.[^\.]{0,2})(\.[^\.]{0,2})(\.*$)|(\.[^\.]*)(\.*$)/;
+	const host = url.replace(regex, '').split('.').pop() as Hosts | undefined;
+	return host;
+}
+
 export function extractVideoId(
 	host: Hosts,
 	string: string
 ): string | undefined {
+	const supportedHostList = ['youtube'];
+	if (!supportedHostList.find((x) => x === host)) return;
 	const str =
 		string[string.length - 1] === '/'
 			? string.slice(0, string.length - 1)
 			: string;
+
 	switch (host) {
 		case 'youtube':
 			let idYT = str;
@@ -25,6 +34,13 @@ export function extractVideoId(
 			if (idYT.includes('/live/')) {
 				idYT = idYT.slice(idYT.indexOf('/live/') + 6);
 			}
+			if (idYT.includes('?list=')) {
+				idYT = idYT.slice(0, idYT.indexOf('?list='));
+			}
+			if (idYT.includes('&list=')) {
+				idYT = idYT.slice(0, idYT.indexOf('&list='));
+			}
+			console.log(idYT);
 			return idYT;
 
 		default:
@@ -32,21 +48,23 @@ export function extractVideoId(
 	}
 }
 
-export async function getVideoData(
-	host: Hosts,
-	id: string
-): Promise<VideoData[]> {
-	console.log(123);
+export async function getVideoData(url: string): Promise<VideoData[]> {
 	try {
-		if (!host) {
-			throw new Error('Select video host');
+		if (!url) {
+			throw new Error('Provide video url');
 		}
+		const host = extractHostName(url);
+		if (!host) {
+			throw new Error('Unsupported video host');
+		}
+		const id = extractVideoId(host, url);
+		console.log(id);
 		if (!id) {
-			throw new Error('Provide video link or ID');
+			throw new Error('Unsupported video host or incorrect Id');
 		}
 		const res: AxiosResponse<VideoData[]> = await axios.get(
 			`/api/${host}?id=${id}`,
-			{ timeout: 10000 }
+			{ timeout: 5000 }
 		);
 		return res.data;
 	} catch (error: unknown) {
