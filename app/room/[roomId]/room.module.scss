@@ -26,15 +26,15 @@
 }
 
 .error {
-	width: fit-content;
-	height: fit-content;
-	margin: auto;
+	max-height: 25%;
+	overflow: auto;
+	margin: 5rem auto;
 	padding: 1rem;
-	font-size: 2rem;
+	font-size: 1.75rem;
 	font-weight: bold;
 	text-align: center;
-	color: var(--bs-dark);
-	background-color: var(--bs-danger);
+	background-color: theme('colors.slate.700');
+	border: 0.5rem solid theme('colors.red.600');
 	border-radius: 0.5rem;
 	cursor: pointer;
 }
@@ -43,6 +43,8 @@
 	@extend .error;
 	width: unset;
 	height: unset;
+	max-height: 100vh;
+	overflow: auto;
 	padding: 0.25rem;
 	border-width: 0.25rem;
 	border-radius: 0;
