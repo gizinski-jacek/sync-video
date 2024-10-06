@@ -1,23 +1,107 @@
-.placeholder {
-	min-width: 120px;
-	width: 120px;
-	min-height: 90px;
-	height: 90px;
-	background-color: #000000;
+.playlist {
+	grid-column: 1;
+	grid-row: 1;
+	width: 100%;
+	padding: 0.5rem;
+	background-color: theme('colors.slate.800');
+	z-index: 50;
 
-	&:after {
-		content: '?';
-		display: inline-block;
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		font-weight: bold;
-		text-align: center;
-		font-size: 2em;
-		line-height: 1em;
-		border-radius: 50%;
-		padding: 0.15rem 0.55rem 0.1rem 0.55rem;
-		border: 2px solid;
+	.container {
+		height: fit-content;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.5rem;
+		padding-right: 0.75rem;
+		max-height: 120px;
+		overflow-y: auto;
+
+		hr {
+			display: none;
+		}
+
+		.video {
+			max-height: 90px;
+			display: flex;
+			gap: 0.25rem;
+			position: relative;
+			text-align: justify;
+
+			p {
+				max-height: 90px;
+				padding-right: 8px;
+				overflow-y: auto;
+				scrollbar-width: thin;
+				line-height: 1.25rem;
+			}
+		}
+
+		hr {
+			color: var(--bs-yellow);
+			margin: 0.5rem 0;
+			opacity: 1;
+		}
+	}
+
+	.placeholder {
+		min-width: 120px;
+		width: 120px;
+		min-height: 90px;
+		height: 90px;
+		background-color: #000000;
+
+		&:after {
+			content: '?';
+			display: inline-block;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			font-weight: bold;
+			text-align: center;
+			font-size: 2em;
+			line-height: 1em;
+			border-radius: 50%;
+			padding: 0.15rem 0.55rem 0.1rem 0.55rem;
+			border: 2px solid;
+		}
+	}
+}
+
+@media only screen and (min-width: 768px) {
+	.playlist {
+		.container {
+			grid-template-columns: 1fr 1fr 1fr;
+		}
+	}
+}
+
+@media only screen and (min-width: 1024px) {
+	.playlist {
+		width: 100%;
+		min-height: 100%;
+		max-height: 100%;
+
+		&.visible {
+			height: calc(100vh - 80px);
+		}
+
+		&.hidden {
+			height: 100vh;
+		}
+
+		.container {
+			max-height: calc(100vh - 100px);
+			display: flex;
+			flex-direction: column;
+			overflow-y: auto;
+			gap: 0;
+			padding-right: 0.35rem;
+			scrollbar-width: thin;
+			max-height: unset;
+
+			hr {
+				display: block;
+			}
+		}
 	}
 }
