@@ -40,7 +40,6 @@ export function extractVideoId(
 			if (idYT.includes('&list=')) {
 				idYT = idYT.slice(0, idYT.indexOf('&list='));
 			}
-			console.log(idYT);
 			return idYT;
 
 		default:
@@ -58,7 +57,6 @@ export async function getVideoData(url: string): Promise<VideoData[]> {
 			throw new Error('Unsupported video host');
 		}
 		const id = extractVideoId(host, url);
-		console.log(id);
 		if (!id) {
 			throw new Error('Unsupported video host or incorrect Id');
 		}
