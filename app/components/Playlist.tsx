@@ -9,11 +9,10 @@ interface Props {
 }
 
 export default function Playlist({ show, playlist, changeVideo }: Props) {
-	console.log(playlist);
 	return (
 		show && (
 			<div className='absolute top-0 left-0 right-0 bottom-0 z-50 flex-1 flex flex-col overflow-hidden p-2 m-2 bg-zinc-900'>
-				{playlist.length > 0 ? (
+				{playlist && playlist.length > 0 ? (
 					playlist.map((video) => (
 						<div
 							key={video.id}
