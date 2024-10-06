@@ -11,7 +11,7 @@ export default function App() {
 			e.preventDefault();
 			const res = await axios.get(
 				`${process.env.NEXT_PUBLIC_API_URI}/api/create-room`,
-				{ timeout: 15000 }
+				{ timeout: 5000 }
 			);
 			router.push(`room/${res.data.roomId}`);
 		} catch (error: unknown) {
