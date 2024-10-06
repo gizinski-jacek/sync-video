@@ -8,46 +8,46 @@ export interface UserData {
 }
 
 export interface MessageData {
+	id: string;
 	user: UserData;
 	message: string;
-	timestamp: string;
+	timestamp: number;
 }
 
-export interface ChatData {
+export interface RoomData {
+	id: string;
+	createdAt: number;
 	userList: UserData[];
 	messageList: MessageData[];
 	videoList: VideoData[];
 }
 
+export interface AllRoomData {
+	userData: UserData;
+	roomData: RoomData;
+}
+
 type ServerToClientEvents = {
 	oops: (error: any) => void;
-	all_room_data: (roomData: {
-		userData: UserData;
-		userList: UserData[];
-		messageList: MessageData[];
-		videoList: VideoData[];
-	}) => void;
+	all_room_data: (data: AllRoomData) => void;
 	new_user_joined: (userData: UserData) => void;
-	new_message_received: (messageData: {
-		user: UserData;
-		message: string;
-		timestamp: string;
-	}) => void;
+	new_message_received: (messageData: MessageData) => void;
 	new_video_added: (videoData: VideoData[]) => void;
 	start_video_playback: () => void;
 	stop_video_playback: () => void;
-	jump_to_video_time: (data: { time: number }) => void;
+	jump_to_video_time: (seconds: number) => void;
 	video_ended: (data: { roomId: string; time: number }) => void;
+	error: (message: string) => void;
 };
 
 type ClientToServerEvents = {
 	send_message: (data: { roomId: string; message: string }) => void;
 	add_video: (data: { roomId: string; video: VideoData }) => void;
-	start_video_playback: (data: { roomId: string }) => void;
-	stop_video_playback: (data: { roomId: string }) => void;
+	start_video_playback: (roomId: string) => void;
+	stop_video_playback: (roomId: string) => void;
 	jump_to_video_time: (data: { roomId: string; time: number }) => void;
 	change_video: (data: { roomId: string; videoId: string }) => void;
-	video_ended: (data: { roomId: string }) => void;
+	video_ended: (roomId: string) => void;
 };
 
 export type Hosts = 'youtube';
