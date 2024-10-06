@@ -19,7 +19,7 @@ export default function Room() {
 	const [error, setError] = useState<string | null>(null);
 	const [searchResults, setSearchResults] = useState<VideoData[] | null>(null);
 	const [showNavbar, setShowNavbar] = useState<boolean>(true);
-	const [showChat, setShowChat] = useState<boolean>(true);
+	const [showPlaylist, setShowPlaylist] = useState<boolean>(false);
 	const [socket, setSocket] = useState<SocketType | null>(null);
 	const [userData, setUserData] = useState<UserData | null>(null);
 	const [roomData, setRoomData] = useState<RoomData | null>(null);
@@ -178,6 +178,10 @@ export default function Room() {
 		socket.emit('video_ended', roomId);
 	}
 
+	function handleRemoveChange(video: VideoData) {
+		// !
+	}
+
 	function dismissError() {
 		setError(null);
 	}
@@ -187,7 +191,7 @@ export default function Room() {
 	}
 
 	function toggleSidebar() {
-		setShowChat((prevState) => !prevState);
+		setShowPlaylist((prevState) => !prevState);
 	}
 
 	function clearSearchResults() {
@@ -204,7 +208,7 @@ export default function Room() {
 				addVideo={handleAddVideo}
 				showNavbar={showNavbar}
 				toggleNavbar={toggleNavbarVisibility}
-				showChat={showChat}
+				showChat={showPlaylist}
 				toggleSidebar={toggleSidebar}
 			/>
 			{error && !!roomData?.videoList.length && (
@@ -243,17 +247,18 @@ export default function Room() {
 								</div>
 							)}
 						</div>
-						<div className='min-w-[240px] lg:w-1/4 relative'>
+						<div className={styles.sidebar}>
 							<Chat
 								userList={roomData.userList}
 								chatMessages={roomData.messageList}
 								sendMessage={handleSendMessage}
 							/>
-							<Playlist
-								show={!showChat}
-								playlist={roomData.videoList}
-								changeVideo={handleVideoChange}
-							/>
+							{showPlaylist && (
+								<Playlist
+									playlist={roomData.videoList}
+									removeVideo={handleRemoveChange}
+								/>
+							)}
 						</div>
 					</div>
 				)}
