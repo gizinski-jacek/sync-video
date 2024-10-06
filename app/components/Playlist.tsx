@@ -1,41 +1,67 @@
+import styles from './Playlist.module.scss';
 import Image from 'next/image';
 import { VideoData } from '../libs/types';
-import styles from './Playlist.module.scss';
 
 interface Props {
-	show: boolean;
 	playlist: VideoData[];
-	changeVideo: (id: string) => void;
+	removeVideo: (video: VideoData) => void;
 }
 
-export default function Playlist({ show, playlist, changeVideo }: Props) {
+export default function Playlist({ playlist, removeVideo }: Props) {
 	return (
-		show && (
-			<div className='absolute top-0 left-0 right-0 bottom-0 z-50 flex-1 flex flex-col overflow-hidden p-2 m-2 bg-zinc-900'>
-				{playlist && playlist.length > 0 ? (
-					playlist.map((video) => (
-						<div
-							key={video.id}
-							className='p-1 border rounded transition-all bg-slate-900 hover:bg-slate-800 cursor-pointer'
-							onClick={() => changeVideo(video.id)}
-						>
+		<div className={styles.playlist}>
+			<ul className={styles.container}>
+				{playlist.map((video, index) => (
+					<li key={video.id}>
+						<div className={styles.video}>
 							{video.thumbnailUrl ? (
 								<Image
 									src={video.thumbnailUrl}
-									width={120}
+									width={130}
 									height={90}
 									alt={`${video.title} thumbnail` || 'Video thumbnail'}
 								/>
 							) : (
-								<div className={`${styles.placeholder} position-relative`} />
+								<div className={`${styles.placeholder} relative`} />
 							)}
-							{video.title}
+							<p className='flex-1 m-0'>{video.title}</p>
+							<div className='flex flex-col justify-between'>
+								<div
+									className='bg-red-700 cursor-pointer'
+									onClick={() => removeVideo(video)}
+								>
+									<svg
+										width='24px'
+										viewBox='0 0 24 24'
+										fill='none'
+										xmlns='http://www.w3.org/2000/svg'
+									>
+										<g strokeWidth='0'></g>
+										<g strokeLinecap='round' strokeLinejoin='round'></g>
+										<g>
+											<path
+												d='M7 17L16.8995 7.10051'
+												stroke='#000000'
+												strokeWidth='1.5'
+												strokeLinecap='round'
+												strokeLinejoin='round'
+											></path>
+											<path
+												d='M7 7.00001L16.8995 16.8995'
+												stroke='#000000'
+												strokeWidth='1.5'
+												strokeLinecap='round'
+												strokeLinejoin='round'
+											></path>
+										</g>
+									</svg>
+								</div>
+							</div>
 						</div>
-					))
-				) : (
-					<div className='m-5 text-center font-bold'>Playlist Empty</div>
-				)}
-			</div>
-		)
+						{index !== playlist.length - 1 && <hr />}
+					</li>
+				))}
+			</ul>
+		</div>
 	);
 }
