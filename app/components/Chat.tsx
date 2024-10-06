@@ -39,7 +39,7 @@ const Chat = ({ userList, chatMessages, sendMessage }: Props) => {
 	return (
 		<div className='flex flex-col h-full rounded bg-neutral-800'>
 			<div className={`${styles.container} flex-1 flex flex-col relative`}>
-				{showUserList && (
+				{userList && showUserList && (
 					<div className='absolute top-0 left-0 right-0 bottom-0 z-50 flex-1 flex flex-col overflow-hidden m-2 bg-neutral-800'>
 						<div className='flex flex-row justify-between font-bold border-b border-neutral-800'>
 							<div className='p-1 px-2 text-sm bg-zinc-900 rounded-t'>
@@ -80,7 +80,7 @@ const Chat = ({ userList, chatMessages, sendMessage }: Props) => {
 					</div>
 				)}
 				<ul className='flex-1 flex flex-col max-h-[160px] md:max-h-full overflow-y-scroll bg-slate-900 rounded m-2 p-2 text-sm'>
-					{chatMessages.map((data) => (
+					{chatMessages?.map((data) => (
 						<div key={data.user.id + data.timestamp}>
 							<span className='font-bold'>
 								{new Date(data.timestamp).toLocaleTimeString('en-GB', {
