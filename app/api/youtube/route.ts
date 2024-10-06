@@ -29,9 +29,11 @@ export async function GET(
 		});
 		const res: AxiosResponse<YoutubeResponse> = await axios.get(
 			'https://youtube.googleapis.com/youtube/v3/videos?' + query,
-			{ timeout: 10000 }
+			{ timeout: 5000 }
 		);
-		console.log(res.data);
+		if (res.data.items.length === 0) {
+			return NextResponse.json({ error: 'No videos found' }, { status: 404 });
+		}
 		const items: VideoData[] = res.data.items.map((item) => {
 			return {
 				host: 'youtube',
