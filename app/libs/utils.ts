@@ -3,9 +3,11 @@ import { NextResponse } from 'next/server';
 import { Hosts, VideoData } from './types';
 
 export function extractHostName(url: string): Hosts | undefined {
-	const regex = /(\.[^\.]{0,2})(\.[^\.]{0,2})(\.*$)|(\.[^\.]*)(\.*$)/;
-	const host = url.replace(regex, '').split('.').pop() as Hosts | undefined;
-	return host;
+	const hostList = ['youtube', 'youtu.be'];
+	const test = hostList
+		.find((host) => new RegExp('\\b' + host + '\\b').test(url))
+		?.replace('.', '') as Hosts | undefined;
+	return test;
 }
 
 export function extractVideoId(
@@ -53,6 +55,7 @@ export async function getVideoData(url: string): Promise<VideoData[]> {
 			throw new Error('Provide video url');
 		}
 		const host = extractHostName(url);
+		console.log(host);
 		if (!host) {
 			throw new Error('Unsupported video host');
 		}
