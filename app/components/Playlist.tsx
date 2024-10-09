@@ -18,7 +18,9 @@ export default function Playlist({ playlist, removeVideo }: Props) {
 								src={video.thumbnailUrl}
 								width={130}
 								height={90}
-								alt={`${video.title} thumbnail` || 'Video thumbnail'}
+								alt={
+									video.title ? `${video.title} thumbnail` : 'Video thumbnail'
+								}
 							/>
 						) : (
 							<div className={`${styles.placeholder} relative`} />
