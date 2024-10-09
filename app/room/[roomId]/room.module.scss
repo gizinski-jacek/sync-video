@@ -43,6 +43,7 @@
 	@extend .error;
 	width: unset;
 	height: unset;
+	margin: 0;
 	max-height: 100vh;
 	overflow: auto;
 	padding: 0.25rem;
@@ -66,7 +67,14 @@
 
 @media only screen and (min-width: 1024px) {
 	.sidebar {
-		width: 300px;
 		max-height: unset;
+		width: 300px;
+		height: calc(100vh - 48px - 1rem);
+		overflow: auto;
+		transition: all 0.5s ease;
+
+		&.navbar-hidden {
+			height: calc(100vh - 1rem);
+		}
 	}
 }
