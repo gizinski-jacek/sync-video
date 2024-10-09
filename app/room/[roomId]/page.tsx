@@ -80,12 +80,24 @@ export default function Room() {
 					id: prevState.id,
 					createdAt: prevState.createdAt,
 					userList: prevState.userList,
-					messageList: [...prevState.messageList, messageData],
+					messageList: messageData,
 					videoList: prevState.videoList,
 				};
 			});
 		});
 		socket.on('new_video_added', (videoData) => {
+			setRoomData((prevState) => {
+				if (prevState === null) return null;
+				return {
+					id: prevState.id,
+					createdAt: prevState.createdAt,
+					userList: prevState.userList,
+					messageList: prevState.messageList,
+					videoList: videoData,
+				};
+			});
+		});
+		socket.on('video_was_removed', (videoData) => {
 			setRoomData((prevState) => {
 				if (prevState === null) return null;
 				return {
@@ -103,7 +115,7 @@ export default function Room() {
 		socket.on('stop_video_playback', () => {
 			setVideoPlaying(false);
 		});
-		socket.on('jump_to_video_time', (seconds) => {
+		socket.on('video_seek', (seconds) => {
 			setVideoPlaybackTime(seconds);
 		});
 
@@ -142,44 +154,39 @@ export default function Room() {
 	}
 
 	function handleAddVideo(video: VideoData) {
-		if (!socket || !video) return;
+		if (!socket || !roomId || !video) return;
 		setSearchResults(null);
 		socket.emit('add_video', { roomId, video });
 	}
 
-	function handlePlayVideo() {
-		if (!socket || !roomId) return;
-		socket.emit('start_video_playback', roomId);
+	function handleRemoveChange(video: VideoData) {
+		if (!socket || !roomId || !video) return;
+		socket.emit('remove_video', { roomId, video });
 	}
 
-	function handleStopVideo() {
-		if (!socket || !roomId) return;
-		socket.emit('stop_video_playback', roomId);
-	}
+	// function handlePlayVideo() {
+	// 	if (!socket || !roomId) return;
+	// 	socket.emit('start_video_playback', roomId);
+	// }
+
+	// function handleStopVideo() {
+	// 	if (!socket || !roomId) return;
+	// 	socket.emit('stop_video_playback', roomId);
+	// }
 
 	function handleVideoSeek(time: number) {
-		if (!socket || !roomId || !time) return;
-		socket.emit('jump_to_video_time', {
-			roomId: roomId,
-			time: time,
-		});
+		// if (!socket || !roomId || !time) return;
+		// socket.emit('video_seek', { roomId: roomId, time: time });
 	}
 
-	function handleVideoChange(videoId: string) {
-		if (!socket || !roomId || !videoId) return;
-		socket.emit('change_video', {
-			roomId: roomId,
-			videoId: videoId,
-		});
-	}
+	// function handleVideoChange(videoId: string) {
+	// 	if (!socket || !roomId || !videoId) return;
+	// 	socket.emit('change_video', { roomId, videoId });
+	// }
 
-	function handleVideoEnded() {
-		if (!socket || !roomId) return;
-		socket.emit('video_ended', roomId);
-	}
-
-	function handleRemoveChange(video: VideoData) {
-		// !
+	function handleVideoEnded(videoId: string) {
+		// if (!socket || !roomId || !videoId) return;
+		// socket.emit('video_ended', { roomId, videoId });
 	}
 
 	function dismissError() {
@@ -238,7 +245,7 @@ export default function Room() {
 										setVideoPlaybackTime(playedSeconds)
 									}
 									onSeek={(seconds) => handleVideoSeek(seconds)}
-									onEnded={handleVideoEnded}
+									onEnded={() => handleVideoEnded(roomData.videoList[0].id)}
 								/>
 							)}
 							{error && !roomData.videoList.length && (
