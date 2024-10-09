@@ -61,12 +61,6 @@ export default function Navbar({
 		}
 	}
 
-	function handleInputFocus(e: React.FocusEvent<HTMLInputElement>) {
-		if (input) {
-			searchVideo(input);
-		}
-	}
-
 	function handlePasteEvent(e: React.ClipboardEvent<HTMLInputElement>) {
 		const value = e.clipboardData.getData('text/plain');
 		searchVideo(value);
@@ -92,7 +86,6 @@ export default function Navbar({
 					value={input}
 					onChange={handleInputChange}
 					onKeyDown={handleInputEnterKey}
-					onFocus={handleInputFocus}
 					onPaste={handlePasteEvent}
 				/>
 				<div className='p-1 cursor-pointer' onClick={() => searchVideo(input)}>
