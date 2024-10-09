@@ -45,7 +45,7 @@
 	}
 }
 
-.chat-messages {
+.chat-messages-list {
 	grid-column: 1;
 	grid-row: 1;
 	display: flex;
@@ -69,13 +69,13 @@
 		overflow-y: auto;
 	}
 
-	.chat-messages,
+	.chat-messages-list,
 	.chat-users {
 		height: unset;
 		max-height: unset;
 	}
 
-	.chat-messages {
+	.chat-messages-list {
 		> li {
 			word-break: break-all;
 		}

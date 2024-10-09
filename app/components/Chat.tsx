@@ -84,7 +84,7 @@ const Chat = ({ userList, chatMessages, sendMessage }: Props) => {
 					</div>
 				)}
 				{!showUserList && (
-					<ul className={styles['chat-messages']}>
+					<ul className={styles['chat-messages-list']}>
 						{chatMessages?.map((data) => (
 							<li key={data.user.id + data.timestamp}>
 								<span className='font-bold'>
