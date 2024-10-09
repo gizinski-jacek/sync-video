@@ -222,7 +222,7 @@ export default function Room() {
 				} flex flex-col`}
 			>
 				{roomData && (
-					<div className='flex-1 flex flex-col lg:flex-row gap-4 m-2 lg:m-4'>
+					<div className='flex-1 flex flex-col lg:flex-row gap-1 m-1 lg:gap-2 lg:m-2'>
 						<div className={`${styles['video']} flex-1 flex flex-col relative`}>
 							{roomData.videoList[0] && (
 								<ReactPlayer
@@ -247,7 +247,11 @@ export default function Room() {
 								</div>
 							)}
 						</div>
-						<div className={styles.sidebar}>
+						<div
+							className={`${styles.sidebar} ${
+								showNavbar ? '' : styles['navbar-hidden']
+							}`}
+						>
 							<Chat
 								userList={roomData.userList}
 								chatMessages={roomData.messageList}
