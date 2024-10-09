@@ -3,6 +3,7 @@ import styles from './Navbar.module.scss';
 import { useEffect, useRef, useState } from 'react';
 import { VideoData } from '../libs/types';
 import Loading from './Loading';
+import Image from 'next/image';
 
 interface Props {
 	fetching: boolean;
@@ -71,23 +72,60 @@ export default function Navbar({
 			<Link className='inline-block my-auto' href={'/'}>
 				SyncVid
 			</Link>
-			<form
-				ref={searchRef}
-				className='flex-1 flex flex-row justify-between gap-2 relative max-w-[360px]'
-				onSubmit={(e) => e.preventDefault()}
-			>
-				<input
-					className='flex-1 rounded bg-slate-900 px-1 text-base'
-					id='input'
-					name='input'
-					type='text'
-					minLength={16}
-					maxLength={256}
-					value={input}
-					onChange={handleInputChange}
-					onKeyDown={handleInputEnterKey}
-					onPaste={handlePasteEvent}
-				/>
+			<div className='flex'>
+				<form
+					ref={searchRef}
+					className='flex-1 flex flex-row justify-between gap-2 relative w-[240px] sm:w-[360px] md:w-[480px] lg:w-[600px]'
+					onSubmit={(e) => e.preventDefault()}
+				>
+					<input
+						className={`w-full bg-slate-900 px-1 text-base ${
+							fetching || (searchResults && searchResults?.length > 0)
+								? 'rounded-t '
+								: 'rounded'
+						}`}
+						id='input'
+						name='input'
+						type='text'
+						minLength={16}
+						maxLength={256}
+						value={input}
+						onChange={handleInputChange}
+						onKeyDown={handleInputEnterKey}
+						onPaste={handlePasteEvent}
+					/>
+					{fetching ? (
+						<div className={styles['loading-container']}>
+							<Loading styleClass='mx-auto w-[80px] h-[80px]' />
+						</div>
+					) : searchResults && searchResults?.length > 0 ? (
+						<ul className={styles['search-results-list']}>
+							{searchResults.map((result) => (
+								<li
+									key={result.id}
+									className={styles['search-result']}
+									onClick={() => addVideo(result)}
+								>
+									{result.thumbnailUrl ? (
+										<Image
+											src={result.thumbnailUrl}
+											width={130}
+											height={90}
+											alt={
+												result.title
+													? `${result.title} thumbnail`
+													: 'Video thumbnail'
+											}
+										/>
+									) : (
+										<div className={`${styles.placeholder} relative`} />
+									)}
+									<p className='flex-1 m-0'>{result.title}</p>
+								</li>
+							))}
+						</ul>
+					) : null}
+				</form>
 				<div className='p-1 cursor-pointer' onClick={() => searchVideo(input)}>
 					<svg
 						width='24px'
@@ -110,24 +148,7 @@ export default function Navbar({
 						</g>
 					</svg>
 				</div>
-				{fetching ? (
-					<ul className='absolute top-full left-0 right-0 z-50 max-w-[320px] flex flex-col gap-2 p-2 border-2 border-gray-400 rounded bg-slate-900 text-xs'>
-						<Loading styleClass='mx-auto w-[80px] h-[80px]' />
-					</ul>
-				) : searchResults && searchResults?.length > 0 ? (
-					<ul className='absolute top-full left-[-25%] right-[-25%] flex max-w-[540px] z-50 flex-col gap-2 p-2 border-2 border-gray-400 rounded bg-slate-900 text-xs'>
-						{searchResults.map((result) => (
-							<li
-								key={result.id}
-								className='p-1 border rounded transition-all hover:bg-slate-800 cursor-pointer'
-								onClick={() => addVideo(result)}
-							>
-								{result.title}
-							</li>
-						))}
-					</ul>
-				) : null}
-			</form>
+			</div>
 			<div className='p-1 cursor-pointer' onClick={toggleSidebar}>
 				{showChat ? (
 					<svg
