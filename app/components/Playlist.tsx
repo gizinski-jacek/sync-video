@@ -4,27 +4,40 @@ import { VideoData } from '../libs/types';
 
 interface Props {
 	playlist: VideoData[];
+	changeVideo: (video: VideoData) => void;
 	removeVideo: (video: VideoData) => void;
 }
 
-export default function Playlist({ playlist, removeVideo }: Props) {
+export default function Playlist({
+	playlist,
+	changeVideo,
+	removeVideo,
+}: Props) {
 	return (
 		<ul className={styles.playlist}>
 			{playlist.map((video, index) => (
 				<li key={video.id}>
 					<div className={styles.video}>
-						{video.thumbnailUrl ? (
-							<Image
-								src={video.thumbnailUrl}
-								width={130}
-								height={90}
-								alt={
-									video.title ? `${video.title} thumbnail` : 'Video thumbnail'
-								}
-							/>
-						) : (
-							<div className={`${styles.placeholder} relative`} />
-						)}
+						<div className={styles['image-hover']}>
+							{video.thumbnailUrl ? (
+								<Image
+									src={video.thumbnailUrl}
+									width={130}
+									height={90}
+									alt={
+										video.title ? `${video.title} thumbnail` : 'Video thumbnail'
+									}
+								/>
+							) : (
+								<div className={`${styles.placeholder} relative`} />
+							)}
+							<div
+								className={styles['change-video']}
+								onClick={() => changeVideo(video)}
+							>
+								Play
+							</div>
+						</div>
 						<p className='flex-1 m-0'>{video.title}</p>
 						<div className='flex flex-col justify-between'>
 							<div
