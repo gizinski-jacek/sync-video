@@ -1,7 +1,7 @@
 'use client';
 
 import styles from './room.module.scss';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Navbar from '@/app/components/Navbar';
 import { RoomData, SocketType, UserData, VideoData } from '@/app/libs/types';
 import Chat from '@/app/components/Chat';
@@ -24,7 +24,7 @@ export default function Room() {
 	const [userData, setUserData] = useState<UserData | null>(null);
 	const [roomData, setRoomData] = useState<RoomData | null>(null);
 	const [videoPlaying, setVideoPlaying] = useState<boolean>(false);
-	const [videoPlaybackTime, setVideoPlaybackTime] = useState<number>(0);
+	const playerRef = useRef<ReactPlayer>(null);
 
 	const router = useRouter();
 
@@ -73,7 +73,7 @@ export default function Room() {
 				};
 			});
 		});
-		socket.on('new_message_received', (messageData) => {
+		socket.on('new_chat_message', (messageData) => {
 			setRoomData((prevState) => {
 				if (prevState === null) return null;
 				return {
@@ -97,7 +97,7 @@ export default function Room() {
 				};
 			});
 		});
-		socket.on('video_was_removed', (videoData) => {
+		socket.on('video_removed', (videoData) => {
 			setRoomData((prevState) => {
 				if (prevState === null) return null;
 				return {
@@ -109,14 +109,39 @@ export default function Room() {
 				};
 			});
 		});
-		socket.on('start_video_playback', () => {
+		socket.on('start_video', () => {
 			setVideoPlaying(true);
 		});
-		socket.on('stop_video_playback', () => {
+		socket.on('stop_video', () => {
 			setVideoPlaying(false);
 		});
 		socket.on('video_seek', (seconds) => {
-			setVideoPlaybackTime(seconds);
+			if (!playerRef.current) return;
+			playerRef.current.seekTo(seconds, 'seconds');
+		});
+		socket.on('change_video', (videoData) => {
+			setRoomData((prevState) => {
+				if (prevState === null) return null;
+				return {
+					id: prevState.id,
+					createdAt: prevState.createdAt,
+					userList: prevState.userList,
+					messageList: prevState.messageList,
+					videoList: videoData,
+				};
+			});
+		});
+		socket.on('video_ended', (videoData) => {
+			setRoomData((prevState) => {
+				if (prevState === null) return null;
+				return {
+					id: prevState.id,
+					createdAt: prevState.createdAt,
+					userList: prevState.userList,
+					messageList: prevState.messageList,
+					videoList: videoData,
+				};
+			});
 		});
 
 		socket.on('error', (message) => {
@@ -131,7 +156,7 @@ export default function Room() {
 
 	function handleSendMessage(message: string) {
 		if (!socket || !roomId) return;
-		socket.emit('send_message', {
+		socket.emit('new_chat_message', {
 			roomId: roomId,
 			message: message,
 		});
@@ -156,37 +181,37 @@ export default function Room() {
 	function handleAddVideo(video: VideoData) {
 		if (!socket || !roomId || !video) return;
 		setSearchResults(null);
-		socket.emit('add_video', { roomId, video });
+		socket.emit('new_video_added', { roomId, video });
 	}
 
 	function handleRemoveChange(video: VideoData) {
 		if (!socket || !roomId || !video) return;
-		socket.emit('remove_video', { roomId, video });
+		socket.emit('video_removed', { roomId, video });
 	}
 
-	// function handlePlayVideo() {
-	// 	if (!socket || !roomId) return;
-	// 	socket.emit('start_video_playback', roomId);
-	// }
+	function handlePlayVideo() {
+		if (!socket || !roomId) return;
+		socket.emit('start_video', roomId);
+	}
 
-	// function handleStopVideo() {
-	// 	if (!socket || !roomId) return;
-	// 	socket.emit('stop_video_playback', roomId);
-	// }
+	function handleStopVideo() {
+		if (!socket || !roomId) return;
+		socket.emit('stop_video', roomId);
+	}
 
 	function handleVideoSeek(time: number) {
-		// if (!socket || !roomId || !time) return;
-		// socket.emit('video_seek', { roomId: roomId, time: time });
+		if (!socket || !roomId || !time) return;
+		socket.emit('video_seek', { roomId: roomId, time: time });
 	}
 
-	// function handleVideoChange(videoId: string) {
-	// 	if (!socket || !roomId || !videoId) return;
-	// 	socket.emit('change_video', { roomId, videoId });
-	// }
+	function handleVideoChange(video: VideoData) {
+		if (!socket || !roomId || !video) return;
+		socket.emit('change_video', { roomId, video });
+	}
 
-	function handleVideoEnded(videoId: string) {
-		// if (!socket || !roomId || !videoId) return;
-		// socket.emit('video_ended', { roomId, videoId });
+	function handleVideoEnded(video: VideoData) {
+		if (!socket || !roomId || !video) return;
+		socket.emit('video_ended', { roomId, video });
 	}
 
 	function dismissError() {
@@ -230,23 +255,30 @@ export default function Room() {
 			>
 				{roomData && (
 					<div className='flex-1 flex flex-col lg:flex-row gap-1 m-1 lg:gap-2 lg:m-2'>
-						<div className={`${styles['video']} flex-1 flex flex-col relative`}>
-							{roomData.videoList[0] && (
+						<div
+							className={`${styles['video']} flex-1 flex flex-col bg-slate-900 relative`}
+						>
+							{roomData.videoList[0] ? (
 								<ReactPlayer
-									className='absolute top-0 left-0'
+									ref={playerRef}
+									className='absolute top-0 left-0 right-0 bottom-0'
 									url={roomData.videoList[0].url}
 									width={'100%'}
 									height={'100%'}
-									muted={true}
+									volume={0.25}
 									controls={true}
 									loop={false}
 									playing={videoPlaying}
-									onProgress={({ playedSeconds }) =>
-										setVideoPlaybackTime(playedSeconds)
-									}
+									onStart={handlePlayVideo}
+									onPlay={handlePlayVideo}
+									onPause={handleStopVideo}
+									onBuffer={handleStopVideo}
+									onBufferEnd={handlePlayVideo}
+									onEnded={() => handleVideoEnded(roomData.videoList[0])}
 									onSeek={(seconds) => handleVideoSeek(seconds)}
-									onEnded={() => handleVideoEnded(roomData.videoList[0].id)}
 								/>
+							) : (
+								<div className='absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-slate-900' />
 							)}
 							{error && !roomData.videoList.length && (
 								<div className={styles.error} onClick={dismissError}>
@@ -267,6 +299,7 @@ export default function Room() {
 							{showPlaylist && (
 								<Playlist
 									playlist={roomData.videoList}
+									changeVideo={handleVideoChange}
 									removeVideo={handleRemoveChange}
 								/>
 							)}
