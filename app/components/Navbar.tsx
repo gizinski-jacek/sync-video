@@ -153,19 +153,6 @@ export default function Navbar({
 				{showChat ? (
 					<svg
 						width='24px'
-						viewBox='0 0 20 20'
-						fill='#ffffff'
-						xmlns='http://www.w3.org/2000/svg'
-					>
-						<g strokeWidth='0'></g>
-						<g strokeLinecap='round' strokeLinejoin='round'></g>
-						<g>
-							<path d='M17 11v3l-3-3H8a2 2 0 0 1-2-2V2c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-1zm-3 2v2a2 2 0 0 1-2 2H6l-3 3v-3H2a2 2 0 0 1-2-2V8c0-1.1.9-2 2-2h2v3a4 4 0 0 0 4 4h6z'></path>
-						</g>
-					</svg>
-				) : (
-					<svg
-						width='24px'
 						viewBox='0 0 24 24'
 						fill='#ffffff'
 						xmlns='http://www.w3.org/2000/svg'
@@ -174,6 +161,19 @@ export default function Navbar({
 						<g strokeLinecap='round' strokeLinejoin='round'></g>
 						<g>
 							<path d='M8,7,2,11V3ZM3,14.5H21a1,1,0,0,0,0-2H3a1,1,0,0,0,0,2ZM10,7a1,1,0,0,0,1,1H21a1,1,0,0,0,0-2H11A1,1,0,0,0,10,7ZM3,21H21a1,1,0,0,0,0-2H3a1,1,0,0,0,0,2Z'></path>
+						</g>
+					</svg>
+				) : (
+					<svg
+						width='24px'
+						viewBox='0 0 20 20'
+						fill='#ffffff'
+						xmlns='http://www.w3.org/2000/svg'
+					>
+						<g strokeWidth='0'></g>
+						<g strokeLinecap='round' strokeLinejoin='round'></g>
+						<g>
+							<path d='M17 11v3l-3-3H8a2 2 0 0 1-2-2V2c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-1zm-3 2v2a2 2 0 0 1-2 2H6l-3 3v-3H2a2 2 0 0 1-2-2V8c0-1.1.9-2 2-2h2v3a4 4 0 0 0 4 4h6z'></path>
 						</g>
 					</svg>
 				)}
