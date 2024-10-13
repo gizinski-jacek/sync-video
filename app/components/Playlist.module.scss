@@ -24,6 +24,33 @@
 			overflow-y: auto;
 			scrollbar-width: thin;
 			line-height: 1.25rem;
+			word-break: break-all;
+		}
+	}
+
+	.image-hover {
+		position: relative;
+		display: flex;
+
+		.change-video {
+			cursor: pointer;
+			font-weight: 900;
+			font-size: 1.5rem;
+			display: none;
+			justify-content: center;
+			align-items: center;
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background-color: theme('colors.slate.800/0.75');
+		}
+
+		&:hover {
+			.change-video {
+				display: flex;
+			}
 		}
 	}
 
@@ -36,7 +63,7 @@
 		width: 130px;
 		min-height: 90px;
 		height: 90px;
-		background-color: #000000;
+		background-color: theme('colors.slate.950');
 
 		&:after {
 			content: '?';
@@ -52,6 +79,14 @@
 			border-radius: 50%;
 			padding: 0.15rem 0.55rem 0.1rem 0.55rem;
 			border: 2px solid;
+		}
+	}
+}
+
+@media only screen and (min-width: 768px) {
+	.playlist {
+		.video {
+			word-break: keep-all;
 		}
 	}
 }
