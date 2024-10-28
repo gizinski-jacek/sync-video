@@ -24,6 +24,7 @@ export default function Room() {
 	const [userData, setUserData] = useState<UserData | null>(null);
 	const [roomData, setRoomData] = useState<RoomData | null>(null);
 	const [videoPlaying, setVideoPlaying] = useState<boolean>(false);
+	const [videoPlaybackRate, setVideoPlaybackRate] = useState<number>(1);
 	const playerRef = useRef<ReactPlayer>(null);
 
 	const router = useRouter();
@@ -40,7 +41,6 @@ export default function Room() {
 		}
 		const newSocket = io(`${process.env.NEXT_PUBLIC_API_URI}/rooms`, {
 			query: { roomId },
-			withCredentials: true,
 		});
 		setSocket(newSocket);
 
@@ -53,93 +53,93 @@ export default function Room() {
 		if (!socket) {
 			return;
 		}
+
 		socket.on('oops', (error) => {
 			console.error(error);
 		});
-		socket.on('all_room_data', (data) => {
-			const { userData, roomData } = data;
+
+		socket.on('all_room_data', ({ userData, roomData }) => {
 			setUserData(userData);
 			setRoomData(roomData);
 		});
-		socket.on('new_user_joined', (userData) => {
+
+		socket.on('new_user_joined', (user) => {
 			setRoomData((prevState) => {
 				if (prevState === null) return null;
 				return {
-					id: prevState.id,
-					createdAt: prevState.createdAt,
-					userList: [...prevState.userList, userData],
-					messageList: prevState.messageList,
-					videoList: prevState.videoList,
+					...prevState,
+					userList: [...prevState.userList, user],
 				};
 			});
 		});
-		socket.on('new_chat_message', (messageData) => {
+
+		socket.on('user_leaving', (userId) => {
 			setRoomData((prevState) => {
 				if (prevState === null) return null;
 				return {
-					id: prevState.id,
-					createdAt: prevState.createdAt,
-					userList: prevState.userList,
-					messageList: messageData,
-					videoList: prevState.videoList,
+					...prevState,
+					userList: prevState.userList.filter((user) => user.id !== userId),
 				};
 			});
 		});
-		socket.on('new_video_added', (videoData) => {
+
+		socket.on('new_chat_message', (message) => {
 			setRoomData((prevState) => {
 				if (prevState === null) return null;
 				return {
-					id: prevState.id,
-					createdAt: prevState.createdAt,
-					userList: prevState.userList,
-					messageList: prevState.messageList,
-					videoList: videoData,
+					...prevState,
+					messageList: message,
 				};
 			});
 		});
-		socket.on('video_removed', (videoData) => {
+
+		socket.on('new_video_added', (video) => {
 			setRoomData((prevState) => {
 				if (prevState === null) return null;
 				return {
-					id: prevState.id,
-					createdAt: prevState.createdAt,
-					userList: prevState.userList,
-					messageList: prevState.messageList,
-					videoList: videoData,
+					...prevState,
+					videoList: video,
 				};
 			});
 		});
-		socket.on('start_video', () => {
+
+		socket.on('video_removed', (video) => {
+			setRoomData((prevState) => {
+				if (prevState === null) return null;
+				return {
+					...prevState,
+					videoList: video,
+				};
+			});
+		});
+
+		socket.on('start_video', (videoProgress) => {
+			playerRef.current?.seekTo(
+				videoProgress * playerRef.current?.getDuration()
+			);
 			setVideoPlaying(true);
 		});
-		socket.on('stop_video', () => {
-			setVideoPlaying(false);
+
+		socket.on('playback_rate_change', (playbackRate) => {
+			setVideoPlaybackRate(playbackRate);
 		});
-		socket.on('video_seek', (seconds) => {
-			if (!playerRef.current) return;
-			playerRef.current.seekTo(seconds, 'seconds');
-		});
-		socket.on('change_video', (videoData) => {
+
+		socket.on('change_video', (video) => {
 			setRoomData((prevState) => {
 				if (prevState === null) return null;
 				return {
-					id: prevState.id,
-					createdAt: prevState.createdAt,
-					userList: prevState.userList,
-					messageList: prevState.messageList,
-					videoList: videoData,
+					...prevState,
+					videoList: video,
 				};
 			});
 		});
-		socket.on('video_ended', (videoData) => {
+
+		socket.on('video_ended', (video) => {
 			setRoomData((prevState) => {
 				if (prevState === null) return null;
 				return {
-					id: prevState.id,
-					createdAt: prevState.createdAt,
-					userList: prevState.userList,
-					messageList: prevState.messageList,
-					videoList: videoData,
+					...prevState,
+					videoList: video,
 				};
 			});
 		});
@@ -152,7 +152,7 @@ export default function Room() {
 		return () => {
 			socket.off();
 		};
-	}, [socket]);
+	}, [socket, videoPlaying]);
 
 	function handleSendMessage(message: string) {
 		if (!socket || !roomId) return;
@@ -190,18 +190,20 @@ export default function Room() {
 	}
 
 	function handlePlayVideo() {
+		if (videoPlaying) return;
 		if (!socket || !roomId) return;
-		socket.emit('start_video', roomId);
+		socket.emit('start_video', { roomId });
 	}
 
-	function handleStopVideo() {
-		if (!socket || !roomId) return;
-		socket.emit('stop_video', roomId);
+	function handleVideoProgressChange(videoProgress: number) {
+		if (!socket || !roomId || !videoProgress) return;
+		if (!userData?.roomIdOwnerList.includes(roomId)) return;
+		socket.emit('video_progress', { roomId, videoProgress });
 	}
 
-	function handleVideoSeek(time: number) {
-		if (!socket || !roomId || !time) return;
-		socket.emit('video_seek', { roomId: roomId, time: time });
+	function handlePlaybackRateChange(playbackRate: number) {
+		if (!socket || !roomId || !playbackRate) return;
+		socket.emit('playback_rate_change', { roomId, playbackRate });
 	}
 
 	function handleVideoChange(video: VideoData) {
@@ -237,6 +239,7 @@ export default function Room() {
 				searchVideo={handleSearchVideo}
 				searchResults={searchResults}
 				clearSearchResults={clearSearchResults}
+				currentVideo={roomData?.videoList[0]}
 				addVideo={handleAddVideo}
 				showNavbar={showNavbar}
 				toggleNavbar={toggleNavbarVisibility}
@@ -269,13 +272,13 @@ export default function Room() {
 									controls={true}
 									loop={false}
 									playing={videoPlaying}
+									playbackRate={videoPlaybackRate}
+									onReady={handlePlayVideo}
 									onStart={handlePlayVideo}
 									onPlay={handlePlayVideo}
-									onPause={handleStopVideo}
-									onBuffer={handleStopVideo}
-									onBufferEnd={handlePlayVideo}
+									onProgress={({ played }) => handleVideoProgressChange(played)}
+									onPlaybackRateChange={handlePlaybackRateChange}
 									onEnded={() => handleVideoEnded(roomData.videoList[0])}
-									onSeek={(seconds) => handleVideoSeek(seconds)}
 								/>
 							) : (
 								<div className='absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-slate-900' />
@@ -291,14 +294,19 @@ export default function Room() {
 								showNavbar ? '' : styles['navbar-hidden']
 							}`}
 						>
-							<Chat
-								userList={roomData.userList}
-								chatMessages={roomData.messageList}
-								sendMessage={handleSendMessage}
-							/>
+							{userData && (
+								<Chat
+									roomId={roomId}
+									userData={userData}
+									userList={roomData.userList}
+									chatMessages={roomData.messageList}
+									sendMessage={handleSendMessage}
+								/>
+							)}
 							{showPlaylist && (
 								<Playlist
 									playlist={roomData.videoList}
+									currentVideo={roomData?.videoList[0]}
 									changeVideo={handleVideoChange}
 									removeVideo={handleRemoveChange}
 								/>
