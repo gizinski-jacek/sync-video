@@ -10,6 +10,7 @@ interface Props {
 	searchVideo: (url: string) => void;
 	searchResults: VideoData[] | null;
 	clearSearchResults: () => void;
+	currentVideo: VideoData | undefined;
 	addVideo: (video: VideoData) => void;
 	showNavbar: boolean;
 	toggleNavbar: () => void;
@@ -22,6 +23,7 @@ export default function Navbar({
 	searchVideo,
 	searchResults,
 	clearSearchResults,
+	currentVideo,
 	addVideo,
 	showNavbar,
 	toggleNavbar,
@@ -103,20 +105,26 @@ export default function Navbar({
 							{searchResults.map((result) => (
 								<li
 									key={result.id}
-									className={styles['search-result']}
+									className={styles['search-result-item']}
 									onClick={() => addVideo(result)}
 								>
 									{result.thumbnailUrl ? (
-										<Image
-											src={result.thumbnailUrl}
-											width={130}
-											height={90}
-											alt={
-												result.title
-													? `${result.title} thumbnail`
-													: 'Video thumbnail'
-											}
-										/>
+										<div className={styles.container}>
+											<Image
+												src={result.thumbnailUrl}
+												width={130}
+												height={90}
+												alt={
+													result.title
+														? `${result.title} thumbnail`
+														: 'Video thumbnail'
+												}
+											/>
+											{currentVideo?.id === result.id &&
+												currentVideo?.host === result.host && (
+													<div className={styles.playing}>Playing</div>
+												)}
+										</div>
 									) : (
 										<div className={`${styles.placeholder} relative`} />
 									)}

@@ -80,7 +80,7 @@
 	z-index: 100;
 }
 
-.search-result {
+.search-result-item {
 	height: 55px;
 	max-height: 55px;
 	display: flex;
@@ -89,6 +89,25 @@
 	background-color: theme('colors.slate.900');
 	cursor: pointer;
 	transition: all 0.25s ease !important;
+
+	.container {
+		position: relative;
+		display: flex;
+
+		.playing {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			font-weight: 900;
+			font-size: 1rem;
+			background-color: theme('colors.slate.800/0.75');
+		}
+	}
 
 	&:hover {
 		filter: brightness(150%);
