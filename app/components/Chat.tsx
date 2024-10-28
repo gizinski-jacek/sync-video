@@ -3,12 +3,20 @@ import { MessageData, UserData } from '../libs/types';
 import styles from './Chat.module.scss';
 
 interface Props {
+	roomId: string;
+	userData: UserData;
 	userList: UserData[];
 	chatMessages: MessageData[];
 	sendMessage: (message: string) => void;
 }
 
-const Chat = ({ userList, chatMessages, sendMessage }: Props) => {
+const Chat = ({
+	roomId,
+	userData,
+	userList,
+	chatMessages,
+	sendMessage,
+}: Props) => {
 	const [input, setInput] = useState<string>('');
 	const [showUserList, setShowUserList] = useState<boolean>(false);
 
@@ -76,26 +84,49 @@ const Chat = ({ userList, chatMessages, sendMessage }: Props) => {
 								</svg>
 							</div>
 						</div>
-						<ul className={styles['user-list']}>
-							{userList.map((user) => (
-								<li key={user.id}>{user.name}</li>
-							))}
-						</ul>
+						<div className={styles['user-list']}>
+							<ul className={styles['user-list-container']}>
+								{userList.map((user) => (
+									<li
+										key={user.id}
+										className={`${
+											user.roomIdOwnerList.includes(roomId)
+												? 'text-red-500'
+												: user.id === userData.id
+												? 'text-green-700'
+												: 'text-gray-300'
+										}`}
+									>
+										{user.name}
+									</li>
+								))}
+							</ul>
+						</div>
 					</div>
 				)}
 				{!showUserList && (
 					<ul className={styles['chat-messages-list']}>
-						{chatMessages?.map((data) => (
-							<li key={data.user.id + data.timestamp}>
+						{chatMessages?.map((message) => (
+							<li key={message.user.id + message.timestamp}>
 								<span className='font-bold'>
-									{new Date(data.timestamp).toLocaleTimeString('en-GB', {
+									{new Date(message.timestamp).toLocaleTimeString('en-GB', {
 										hour: '2-digit',
 										minute: '2-digit',
 									})}
 								</span>{' '}
-								<span className='underline'>{data.user.name}</span>
+								<span
+									className={`${
+										message.user.roomIdOwnerList.includes(roomId)
+											? 'text-red-500'
+											: message.user.id === userData.id
+											? 'text-green-700'
+											: 'text-gray-300'
+									}`}
+								>
+									{message.user.name}
+								</span>
 								{': '}
-								{data.message}
+								{message.message}
 							</li>
 						))}
 						<li ref={chatBottom}></li>
