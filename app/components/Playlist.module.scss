@@ -28,23 +28,28 @@
 		}
 	}
 
-	.image-hover {
+	.container {
 		position: relative;
 		display: flex;
 
-		.change-video {
-			cursor: pointer;
-			font-weight: 900;
-			font-size: 1.5rem;
-			display: none;
-			justify-content: center;
-			align-items: center;
+		.playing {
 			position: absolute;
 			top: 0;
 			left: 0;
 			right: 0;
 			bottom: 0;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			font-weight: 900;
+			font-size: 1.5rem;
 			background-color: theme('colors.slate.800/0.75');
+		}
+
+		.change-video {
+			@extend .playing;
+			cursor: pointer;
+			display: none;
 		}
 
 		&:hover {

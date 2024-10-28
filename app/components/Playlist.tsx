@@ -6,19 +6,21 @@ interface Props {
 	playlist: VideoData[];
 	changeVideo: (video: VideoData) => void;
 	removeVideo: (video: VideoData) => void;
+	currentVideo: VideoData;
 }
 
 export default function Playlist({
 	playlist,
 	changeVideo,
 	removeVideo,
+	currentVideo,
 }: Props) {
 	return (
 		<ul className={styles.playlist}>
 			{playlist.map((video, index) => (
 				<li key={video.id}>
 					<div className={styles.video}>
-						<div className={styles['image-hover']}>
+						<div className={styles.container}>
 							{video.thumbnailUrl ? (
 								<Image
 									src={video.thumbnailUrl}
@@ -31,12 +33,17 @@ export default function Playlist({
 							) : (
 								<div className={`${styles.placeholder} relative`} />
 							)}
-							<div
-								className={styles['change-video']}
-								onClick={() => changeVideo(video)}
-							>
-								Play
-							</div>
+							{currentVideo?.id === video.id &&
+							currentVideo?.host === video.host ? (
+								<div className={styles.playing}>Playing</div>
+							) : (
+								<div
+									className={styles['change-video']}
+									onClick={() => changeVideo(video)}
+								>
+									Play
+								</div>
+							)}
 						</div>
 						<p className='flex-1 m-0'>{video.title}</p>
 						<div className='flex flex-col justify-between'>
