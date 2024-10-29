@@ -41,6 +41,7 @@ export default function Room() {
 		}
 		const newSocket = io(`${process.env.NEXT_PUBLIC_API_URI}/rooms`, {
 			query: { roomId },
+			withCredentials: true,
 		});
 		setSocket(newSocket);
 
@@ -61,16 +62,6 @@ export default function Room() {
 		socket.on('all_room_data', ({ userData, roomData }) => {
 			setUserData(userData);
 			setRoomData(roomData);
-		});
-
-		socket.on('new_user_joined', (user) => {
-			setRoomData((prevState) => {
-				if (prevState === null) return null;
-				return {
-					...prevState,
-					userList: [...prevState.userList, user],
-				};
-			});
 		});
 
 		socket.on('user_leaving', (userId) => {
@@ -117,7 +108,13 @@ export default function Room() {
 			playerRef.current?.seekTo(
 				videoProgress * playerRef.current?.getDuration()
 			);
-			setVideoPlaying(true);
+			setTimeout(() => {
+				setVideoPlaying(true);
+			}, 100);
+		});
+
+		socket.on('stop_video', () => {
+			setVideoPlaying(false);
 		});
 
 		socket.on('playback_rate_change', (playbackRate) => {
@@ -191,13 +188,19 @@ export default function Room() {
 
 	function handlePlayVideo() {
 		if (videoPlaying) return;
-		if (!socket || !roomId) return;
+		if (!socket?.id || !roomId) return;
 		socket.emit('start_video', { roomId });
 	}
 
+	function handlePauseVideo() {
+		if (!videoPlaying) return;
+		if (!socket?.id || !roomId) return;
+		socket.emit('stop_video', { roomId });
+	}
+
 	function handleVideoProgressChange(videoProgress: number) {
-		if (!socket || !roomId || !videoProgress) return;
-		if (!userData?.roomIdOwnerList.includes(roomId)) return;
+		if (!socket || !roomId || !videoProgress || !userData || !roomData) return;
+		if (userData.id !== roomData.ownerId) return;
 		socket.emit('video_progress', { roomId, videoProgress });
 	}
 
@@ -273,9 +276,9 @@ export default function Room() {
 									loop={false}
 									playing={videoPlaying}
 									playbackRate={videoPlaybackRate}
-									onReady={handlePlayVideo}
 									onStart={handlePlayVideo}
 									onPlay={handlePlayVideo}
+									onPause={handlePauseVideo}
 									onProgress={({ played }) => handleVideoProgressChange(played)}
 									onPlaybackRateChange={handlePlaybackRateChange}
 									onEnded={() => handleVideoEnded(roomData.videoList[0])}
@@ -296,21 +299,20 @@ export default function Room() {
 						>
 							{userData && (
 								<Chat
-									roomId={roomId}
+									roomOwnerId={roomData.ownerId}
 									userData={userData}
 									userList={roomData.userList}
 									chatMessages={roomData.messageList}
 									sendMessage={handleSendMessage}
 								/>
 							)}
-							{showPlaylist && (
-								<Playlist
-									playlist={roomData.videoList}
-									currentVideo={roomData?.videoList[0]}
-									changeVideo={handleVideoChange}
-									removeVideo={handleRemoveChange}
-								/>
-							)}
+							<Playlist
+								showPlaylist={showPlaylist}
+								playlist={roomData.videoList}
+								currentVideo={roomData?.videoList[0]}
+								changeVideo={handleVideoChange}
+								removeVideo={handleRemoveChange}
+							/>
 						</div>
 					</div>
 				)}
