@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { VideoData } from '../libs/types';
 
 interface Props {
+	showPlaylist: boolean;
 	playlist: VideoData[];
 	changeVideo: (video: VideoData) => void;
 	removeVideo: (video: VideoData) => void;
@@ -10,13 +11,14 @@ interface Props {
 }
 
 export default function Playlist({
+	showPlaylist,
 	playlist,
 	changeVideo,
 	removeVideo,
 	currentVideo,
 }: Props) {
 	return (
-		<ul className={styles.playlist}>
+		<ul className={`${styles.playlist} ${showPlaylist ? styles.visible : ''}`}>
 			{playlist.map((video, index) => (
 				<li key={video.id}>
 					<div className={styles.video}>
