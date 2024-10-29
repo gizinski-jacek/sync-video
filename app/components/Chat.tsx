@@ -3,7 +3,7 @@ import { MessageData, UserData } from '../libs/types';
 import styles from './Chat.module.scss';
 
 interface Props {
-	roomId: string;
+	roomOwnerId: string;
 	userData: UserData;
 	userList: UserData[];
 	chatMessages: MessageData[];
@@ -11,7 +11,7 @@ interface Props {
 }
 
 const Chat = ({
-	roomId,
+	roomOwnerId,
 	userData,
 	userList,
 	chatMessages,
@@ -50,7 +50,11 @@ const Chat = ({
 
 	return (
 		<div className={styles.chat}>
-			<div className={styles.container}>
+			<div
+				className={`${styles.container} ${
+					showUserList ? styles['user-list-visible'] : ''
+				}`}
+			>
 				{userList && showUserList && (
 					<div className={styles['chat-users']}>
 						<div className='flex flex-row justify-between font-bold border-b-2 border-slate-800'>
@@ -90,7 +94,7 @@ const Chat = ({
 									<li
 										key={user.id}
 										className={`${
-											user.roomIdOwnerList.includes(roomId)
+											user.id === roomOwnerId
 												? 'text-red-500'
 												: user.id === userData.id
 												? 'text-green-700'
@@ -104,37 +108,35 @@ const Chat = ({
 						</div>
 					</div>
 				)}
-				{!showUserList && (
-					<ul className={styles['chat-messages-list']}>
-						{chatMessages?.map((message) => (
-							<li key={message.user.id + message.timestamp}>
-								<span className='font-bold'>
-									{new Date(message.timestamp).toLocaleTimeString('en-GB', {
-										hour: '2-digit',
-										minute: '2-digit',
-									})}
-								</span>{' '}
-								<span
-									className={`${
-										message.user.roomIdOwnerList.includes(roomId)
-											? 'text-red-500'
-											: message.user.id === userData.id
-											? 'text-green-700'
-											: 'text-gray-300'
-									}`}
-								>
-									{message.user.name}
-								</span>
-								{': '}
-								{message.message}
-							</li>
-						))}
-						<li ref={chatBottom}></li>
-					</ul>
-				)}
+				<ul className={styles['chat-messages-list']}>
+					{chatMessages?.map((message) => (
+						<li key={message.user.id + message.timestamp}>
+							<span className='font-bold'>
+								{new Date(message.timestamp).toLocaleTimeString('en-GB', {
+									hour: '2-digit',
+									minute: '2-digit',
+								})}
+							</span>{' '}
+							<span
+								className={`${
+									message.user.id === roomOwnerId
+										? 'text-red-500'
+										: message.user.id === userData.id
+										? 'text-green-700'
+										: 'text-gray-300'
+								}`}
+							>
+								{message.user.name}
+							</span>
+							{': '}
+							{message.message}
+						</li>
+					))}
+					<li ref={chatBottom}></li>
+				</ul>
 			</div>
 			<form
-				className='max-h-[120px] flex flex-row justify-between items-center gap-2 p-2 border-s-2 lg:border-s-0 lg:border-t-4 border-slate-900'
+				className='max-h-[120px] w-[300px] flex flex-row justify-between items-center gap-2 p-2 border-s-2 lg:border-s-0 lg:border-t-4 border-slate-900'
 				onSubmit={(e) => e.preventDefault()}
 			>
 				<label className='hidden' htmlFor='input'></label>
