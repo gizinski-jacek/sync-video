@@ -5,7 +5,6 @@ export type SocketType = Socket<ServerToClientEvents, ClientToServerEvents>;
 export interface UserData {
 	id: string;
 	name: string;
-	roomIdOwnerList: string[];
 }
 
 export interface MessageData {
@@ -16,28 +15,23 @@ export interface MessageData {
 }
 
 export interface RoomData {
+	ownerId: string;
 	id: string;
 	createdAt: number;
 	userList: UserData[];
 	messageList: MessageData[];
 	videoList: VideoData[];
-	videoProgress: number;
-}
-
-export interface AllRoomData {
-	userData: UserData;
-	roomData: RoomData;
 }
 
 type ServerToClientEvents = {
 	oops: (error: any) => void;
-	all_room_data: (data: AllRoomData) => void;
-	new_user_joined: (userData: UserData) => void;
+	all_room_data: (data: { userData: UserData; roomData: RoomData }) => void;
 	user_leaving: (userId: string) => void;
 	new_chat_message: (messageData: MessageData[]) => void;
 	new_video_added: (videoData: VideoData[]) => void;
 	video_removed: (videoData: VideoData[]) => void;
 	start_video: (videoProgress: number) => void;
+	stop_video: () => void;
 	video_progress: (videoProgress: number) => void;
 	playback_rate_change: (playbackRate: number) => void;
 	change_video: (videoData: VideoData[]) => void;
@@ -50,6 +44,7 @@ type ClientToServerEvents = {
 	new_video_added: (data: { roomId: string; video: VideoData }) => void;
 	video_removed: (data: { roomId: string; video: VideoData }) => void;
 	start_video: (data: { roomId: string }) => void;
+	stop_video: (data: { roomId: string }) => void;
 	video_progress: (data: { roomId: string; videoProgress: number }) => void;
 	playback_rate_change: (data: {
 		roomId: string;
