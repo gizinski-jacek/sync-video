@@ -26,16 +26,16 @@ export interface RoomData {
 type ServerToClientEvents = {
 	oops: (error: any) => void;
 	all_room_data: (data: { userData: UserData; roomData: RoomData }) => void;
-	user_leaving: (userId: string) => void;
-	new_chat_message: (messageData: MessageData[]) => void;
-	new_video_added: (videoData: VideoData[]) => void;
-	video_removed: (videoData: VideoData[]) => void;
-	start_video: (videoProgress: number) => void;
+	user_leaving: (data: { userId: string }) => void;
+	new_chat_message: (data: { messageList: MessageData[] }) => void;
+	new_video_added: (data: { videoList: VideoData[] }) => void;
+	video_removed: (data: { videoList: VideoData[] }) => void;
+	start_video: (data: { videoProgress: number }) => void;
 	stop_video: () => void;
-	video_progress: (videoProgress: number) => void;
-	playback_rate_change: (playbackRate: number) => void;
-	change_video: (videoData: VideoData[]) => void;
-	video_ended: (videoData: VideoData[]) => void;
+	video_progress: (data: { videoProgress: number }) => void;
+	playback_rate_change: (data: { playbackRate: number }) => void;
+	change_video: (data: { videoList: VideoData[] }) => void;
+	video_ended: (data: { videoList: VideoData[] }) => void;
 	error: (message: string) => void;
 };
 
