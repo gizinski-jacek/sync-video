@@ -39,10 +39,10 @@ export default function Room() {
 		if (!roomId) {
 			return;
 		}
-		const newSocket = io(`${process.env.NEXT_PUBLIC_API_URI}/rooms`, {
-			query: { roomId },
-			withCredentials: true,
-		});
+		const newSocket: SocketType = io(
+			`${process.env.NEXT_PUBLIC_API_URI}/rooms`,
+			{ query: { roomId }, withCredentials: true }
+		);
 		setSocket(newSocket);
 
 		return () => {
@@ -64,7 +64,7 @@ export default function Room() {
 			setRoomData(roomData);
 		});
 
-		socket.on('user_leaving', (userId) => {
+		socket.on('user_leaving', ({ userId }) => {
 			setRoomData((prevState) => {
 				if (prevState === null) return null;
 				return {
@@ -74,37 +74,37 @@ export default function Room() {
 			});
 		});
 
-		socket.on('new_chat_message', (message) => {
+		socket.on('new_chat_message', ({ messageList }) => {
 			setRoomData((prevState) => {
 				if (prevState === null) return null;
 				return {
 					...prevState,
-					messageList: message,
+					messageList: messageList,
 				};
 			});
 		});
 
-		socket.on('new_video_added', (video) => {
+		socket.on('new_video_added', ({ videoList }) => {
 			setRoomData((prevState) => {
 				if (prevState === null) return null;
 				return {
 					...prevState,
-					videoList: video,
+					videoList: videoList,
 				};
 			});
 		});
 
-		socket.on('video_removed', (video) => {
+		socket.on('video_removed', ({ videoList }) => {
 			setRoomData((prevState) => {
 				if (prevState === null) return null;
 				return {
 					...prevState,
-					videoList: video,
+					videoList: videoList,
 				};
 			});
 		});
 
-		socket.on('start_video', (videoProgress) => {
+		socket.on('start_video', ({ videoProgress }) => {
 			playerRef.current?.seekTo(
 				videoProgress * playerRef.current?.getDuration()
 			);
@@ -117,26 +117,26 @@ export default function Room() {
 			setVideoPlaying(false);
 		});
 
-		socket.on('playback_rate_change', (playbackRate) => {
+		socket.on('playback_rate_change', ({ playbackRate }) => {
 			setVideoPlaybackRate(playbackRate);
 		});
 
-		socket.on('change_video', (video) => {
+		socket.on('change_video', ({ videoList }) => {
 			setRoomData((prevState) => {
 				if (prevState === null) return null;
 				return {
 					...prevState,
-					videoList: video,
+					videoList: videoList,
 				};
 			});
 		});
 
-		socket.on('video_ended', (video) => {
+		socket.on('video_ended', ({ videoList }) => {
 			setRoomData((prevState) => {
 				if (prevState === null) return null;
 				return {
 					...prevState,
-					videoList: video,
+					videoList: videoList,
 				};
 			});
 		});
