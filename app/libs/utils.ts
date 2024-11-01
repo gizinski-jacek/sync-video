@@ -1,12 +1,27 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { NextResponse } from 'next/server';
-import { Hosts, VideoData } from './types';
+import { hostList, Hosts, VideoData } from './types';
 
 export function extractHostName(url: string): Hosts | undefined {
-	const hostList = ['youtube', 'youtu.be'];
+	if (url.includes('m3u8')) {
+		return 'm3u8';
+	}
+	if (url.includes('dai.ly')) {
+		return 'dailymotion';
+	}
 	const host = hostList
 		.find((host) => new RegExp('\\b' + host + '\\b').test(url))
 		?.replace('.', '') as Hosts | undefined;
+	if (host === 'youtube' && url.includes('playlist')) {
+		return 'youtube-playlist';
+	}
+	if (host === 'twitch' && url.includes('videos')) {
+		return 'twitch-vod';
+	}
+
+	if (host === 'dailymotion' && url.includes('playlist')) {
+		return 'dailymotion-playlist';
+	}
 	return host;
 }
 
@@ -14,13 +29,11 @@ export function extractVideoId(
 	host: Hosts,
 	string: string
 ): string | undefined {
-	const supportedHostList = ['youtube'];
-	if (!supportedHostList.find((x) => x === host)) return;
+	if (!hostList.find((x) => x === host)) return;
 	const str =
 		string[string.length - 1] === '/'
 			? string.slice(0, string.length - 1)
 			: string;
-
 	switch (host) {
 		case 'youtube':
 			let idYT = str;
@@ -43,7 +56,34 @@ export function extractVideoId(
 				idYT = idYT.slice(0, idYT.indexOf('&list='));
 			}
 			return idYT;
-
+		case 'youtube-playlist':
+			let idYTP = str;
+			if (idYTP.includes('?si=')) {
+				idYTP = idYTP.slice(0, idYTP.indexOf('?si='));
+			}
+			if (idYTP.includes('?list=')) {
+				idYTP = idYTP.slice(idYTP.indexOf('?list=') + 6);
+			}
+			if (idYTP.includes('&list=')) {
+				idYTP = idYTP.slice(idYTP.indexOf('&list=') + 6);
+			}
+			return idYTP;
+		case 'twitch-vod':
+			let idTTVVod = str;
+			if (idTTVVod.includes('/videos/')) {
+				idTTVVod = idTTVVod.slice(str.indexOf('/videos/') + 8);
+			}
+			if (idTTVVod.includes('?')) {
+				idTTVVod = idTTVVod.slice(0, idTTVVod.indexOf('?'));
+			}
+			return idTTVVod;
+		case 'twitch':
+		case 'dailymotion':
+		case 'dailymotion-playlist':
+		case 'vimeo':
+			return str.slice(str.lastIndexOf('/') + 1);
+		case 'm3u8':
+			return str;
 		default:
 			break;
 	}
