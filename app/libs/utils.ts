@@ -4,10 +4,10 @@ import { Hosts, VideoData } from './types';
 
 export function extractHostName(url: string): Hosts | undefined {
 	const hostList = ['youtube', 'youtu.be'];
-	const test = hostList
+	const host = hostList
 		.find((host) => new RegExp('\\b' + host + '\\b').test(url))
 		?.replace('.', '') as Hosts | undefined;
-	return test;
+	return host;
 }
 
 export function extractVideoId(
@@ -55,7 +55,6 @@ export async function getVideoData(url: string): Promise<VideoData[]> {
 			throw new Error('Provide video url');
 		}
 		const host = extractHostName(url);
-		console.log(host);
 		if (!host) {
 			throw new Error('Unsupported video host');
 		}
