@@ -94,6 +94,7 @@ export default function Navbar({
 						value={input}
 						onChange={handleInputChange}
 						onKeyDown={handleInputEnterKey}
+						onBlur={handleInputChange}
 						onPaste={handlePasteEvent}
 					/>
 					{fetching ? (
