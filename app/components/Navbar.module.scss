@@ -76,7 +76,6 @@
 	background-color: theme('colors.slate.700');
 	outline: 2px solid theme('colors.blue.500');
 	border-radius: 0 0 4px 4px;
-	font-size: 1rem;
 	z-index: 100;
 }
 
@@ -87,6 +86,7 @@
 	flex-direction: row;
 	gap: 0.25rem;
 	background-color: theme('colors.slate.900');
+	font-size: 0.8rem;
 	cursor: pointer;
 	transition: all 0.25s ease !important;
 
@@ -119,6 +119,7 @@
 		overflow-y: auto;
 		scrollbar-width: thin;
 		line-height: 1.25rem;
+		padding-right: 6px;
 	}
 
 	img {
@@ -131,8 +132,8 @@
 	.placeholder {
 		min-width: 80px;
 		width: 80px;
-		min-height: 60px;
-		height: 60px;
+		min-height: 55px;
+		height: 55px;
 		background-color: #000000;
 
 		&:after {
