@@ -34,7 +34,7 @@ export async function GET(
 		if (res.data.items.length === 0) {
 			return NextResponse.json({ error: 'No videos found' }, { status: 404 });
 		}
-		const items: VideoData[] = res.data.items.map((item) => {
+		const data: VideoData[] = res.data.items.map((item) => {
 			return {
 				host: 'youtube',
 				id: item.id,
@@ -47,7 +47,7 @@ export async function GET(
 				thumbnailUrl: item.snippet.thumbnails.default.url,
 			};
 		});
-		return NextResponse.json(items, { status: 200 });
+		return NextResponse.json(data, { status: 200 });
 	} catch (error: unknown) {
 		return formatFetchError(error);
 	}
