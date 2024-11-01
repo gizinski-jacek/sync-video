@@ -1,4 +1,4 @@
-import { TwitchAuth, TwitchStream, VideoData } from '@/app/libs/types';
+import { TwitchAuth, TwitchLivestream, VideoData } from '@/app/libs/types';
 import { formatFetchError } from '@/app/libs/utils';
 import axios, { AxiosResponse } from 'axios';
 import { NextResponse, type NextRequest } from 'next/server';
@@ -35,7 +35,7 @@ export async function GET(
 		const query = querystring.stringify({
 			user_login: id,
 		});
-		const res: AxiosResponse<TwitchStream> = await axios.get(
+		const res: AxiosResponse<TwitchLivestream> = await axios.get(
 			'https://api.twitch.tv/helix/streams?' + query,
 			{
 				headers: {
