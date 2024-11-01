@@ -16,6 +16,11 @@ const nextConfig = {
 				hostname: '*ytimg.com',
 				port: '',
 			},
+			{
+				protocol: 'https',
+				hostname: '*static-cdn.jtvnw.net',
+				port: '',
+			},
 		],
 	},
 };
