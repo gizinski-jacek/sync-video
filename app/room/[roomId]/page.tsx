@@ -171,6 +171,7 @@ export default function Room() {
 				(error as NextResponse).statusText ||
 					'Unknown fetching error. Make sure you selected correct source.'
 			);
+			setSearchResults(null);
 			setFetching(false);
 		}
 	}
@@ -249,7 +250,7 @@ export default function Room() {
 				showChat={showPlaylist}
 				toggleSidebar={toggleSidebar}
 			/>
-			{error && !!roomData?.videoList.length && (
+			{error && (
 				<div className={styles['error-absolute']} onClick={dismissError}>
 					{error}
 				</div>
