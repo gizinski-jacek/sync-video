@@ -15,7 +15,7 @@ export interface MessageData {
 }
 
 export interface RoomData {
-	ownerId: string;
+	ownerData: UserData;
 	id: string;
 	createdAt: number;
 	userList: UserData[];
@@ -26,7 +26,7 @@ export interface RoomData {
 type ServerToClientEvents = {
 	oops: (error: any) => void;
 	all_room_data: (data: { userData: UserData; roomData: RoomData }) => void;
-	user_leaving: (data: { userId: string }) => void;
+	user_leaving: (data: { userList: UserData[] }) => void;
 	new_chat_message: (data: { messageList: MessageData[] }) => void;
 	new_video_added: (data: { videoList: VideoData[] }) => void;
 	video_removed: (data: { videoList: VideoData[] }) => void;
@@ -35,6 +35,7 @@ type ServerToClientEvents = {
 	video_progress: (data: { videoProgress: number }) => void;
 	playback_rate_change: (data: { playbackRate: number }) => void;
 	change_video: (data: { videoList: VideoData[] }) => void;
+	reorder_video: (data: { videoList: VideoData[] }) => void;
 	video_ended: (data: { videoList: VideoData[] }) => void;
 	error: (message: string) => void;
 };
@@ -51,11 +52,17 @@ type ClientToServerEvents = {
 		playbackRate: number;
 	}) => void;
 	change_video: (data: { roomId: string; video: VideoData }) => void;
+	reorder_video: (data: {
+		roomId: string;
+		video: VideoData;
+		targetIndex: number;
+	}) => void;
 	video_ended: (data: { roomId: string; video: VideoData }) => void;
 };
 
 export type Hosts =
 	| 'youtube'
+	| 'youtu.be'
 	| 'youtube-playlist'
 	| 'twitch'
 	| 'twitch-vod'
@@ -67,6 +74,7 @@ export type Hosts =
 
 export const hostList: Hosts[] = [
 	'youtube',
+	'youtu.be',
 	'youtube-playlist',
 	'twitch',
 	'twitch-vod',
