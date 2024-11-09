@@ -35,6 +35,7 @@ export function extractVideoId(
 			? string.slice(0, string.length - 1)
 			: string;
 	switch (host) {
+		case 'youtu.be':
 		case 'youtube':
 			let idYT = str;
 			if (idYT.includes('?si=')) {
