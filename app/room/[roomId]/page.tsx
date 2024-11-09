@@ -64,12 +64,12 @@ export default function Room() {
 			setRoomData(roomData);
 		});
 
-		socket.on('user_leaving', ({ userId }) => {
+		socket.on('user_leaving', ({ userList }) => {
 			setRoomData((prevState) => {
 				if (prevState === null) return null;
 				return {
 					...prevState,
-					userList: prevState.userList.filter((user) => user.id !== userId),
+					userList: userList,
 				};
 			});
 		});
@@ -122,6 +122,16 @@ export default function Room() {
 		});
 
 		socket.on('change_video', ({ videoList }) => {
+			setRoomData((prevState) => {
+				if (prevState === null) return null;
+				return {
+					...prevState,
+					videoList: videoList,
+				};
+			});
+		});
+
+		socket.on('reorder_video', ({ videoList }) => {
 			setRoomData((prevState) => {
 				if (prevState === null) return null;
 				return {
@@ -201,7 +211,7 @@ export default function Room() {
 
 	function handleVideoProgressChange(videoProgress: number) {
 		if (!socket || !roomId || !videoProgress || !userData || !roomData) return;
-		if (userData.id !== roomData.ownerId) return;
+		if (userData.id !== roomData.ownerData.id) return;
 		socket.emit('video_progress', { roomId, videoProgress });
 	}
 
@@ -213,6 +223,11 @@ export default function Room() {
 	function handleVideoChange(video: VideoData) {
 		if (!socket || !roomId || !video) return;
 		socket.emit('change_video', { roomId, video });
+	}
+
+	function handleReorderVideo(video: VideoData, targetIndex: number) {
+		if (!socket || !roomId || !video) return;
+		socket.emit('reorder_video', { roomId, video, targetIndex });
 	}
 
 	function handleVideoEnded(video: VideoData) {
@@ -261,7 +276,7 @@ export default function Room() {
 				} flex flex-col`}
 			>
 				{roomData && (
-					<div className='flex-1 flex flex-col lg:flex-row gap-1 m-1 lg:gap-2 lg:m-2'>
+					<div className='flex-1 flex flex-col lg:flex-row gap-1 xs:m-1 lg:gap-2 lg:m-2'>
 						<div
 							className={`${styles['video']} flex-1 flex flex-col bg-slate-900 relative`}
 						>
@@ -300,7 +315,7 @@ export default function Room() {
 						>
 							{userData && (
 								<Chat
-									roomOwnerId={roomData.ownerId}
+									roomOwnerId={roomData.ownerData.id}
 									userData={userData}
 									userList={roomData.userList}
 									chatMessages={roomData.messageList}
@@ -313,6 +328,7 @@ export default function Room() {
 								currentVideo={roomData?.videoList[0]}
 								changeVideo={handleVideoChange}
 								removeVideo={handleRemoveChange}
+								reorderVideo={handleReorderVideo}
 							/>
 						</div>
 					</div>
