@@ -7,6 +7,7 @@ interface Props {
 	playlist: VideoData[];
 	changeVideo: (video: VideoData) => void;
 	removeVideo: (video: VideoData) => void;
+	reorderVideo: (video: VideoData, index: number) => void;
 	currentVideo: VideoData;
 }
 
@@ -15,6 +16,7 @@ export default function Playlist({
 	playlist,
 	changeVideo,
 	removeVideo,
+	reorderVideo,
 	currentVideo,
 }: Props) {
 	return (
@@ -50,7 +52,7 @@ export default function Playlist({
 						<p className='flex-1 m-0'>{video.title}</p>
 						<div className='flex flex-col justify-between'>
 							<div
-								className='bg-red-700 cursor-pointer'
+								className='bg-red-700 hover:bg-red-600 transition-all cursor-pointer'
 								onClick={() => removeVideo(video)}
 							>
 								<svg
@@ -76,6 +78,40 @@ export default function Playlist({
 											strokeLinecap='round'
 											strokeLinejoin='round'
 										></path>
+									</g>
+								</svg>
+							</div>
+							<div
+								className='bg-yellow-600 hover:bg-yellow-500 transition-all cursor-pointer'
+								onClick={() => reorderVideo(video, index - 1)}
+							>
+								<svg
+									width='24px'
+									fill='#000000'
+									viewBox='0 0 32 32'
+									xmlns='http://www.w3.org/2000/svg'
+								>
+									<g strokeWidth='0'></g>
+									<g strokeLinecap='round' strokeLinejoin='round'></g>
+									<g>
+										<path d='M8 20.695l7.997-11.39L24 20.695z'></path>
+									</g>
+								</svg>
+							</div>
+							<div
+								className='bg-yellow-600 hover:bg-yellow-500 transition-all cursor-pointer'
+								onClick={() => reorderVideo(video, index + 1)}
+							>
+								<svg
+									width='24px'
+									fill='#000000'
+									viewBox='0 0 32 32'
+									xmlns='http://www.w3.org/2000/svg'
+								>
+									<g strokeWidth='0'></g>
+									<g strokeLinecap='round' strokeLinejoin='round'></g>
+									<g>
+										<path d='M24 11.305l-7.997 11.39L8 11.305z'></path>
 									</g>
 								</svg>
 							</div>
