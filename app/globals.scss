@@ -36,6 +36,11 @@ body {
 a {
 	color: inherit;
 	text-decoration: none;
+	transition: all 0.5s ease;
+
+	&:hover {
+		color: #ffffff;
+	}
 }
 
 @media (prefers-color-scheme: dark) {
