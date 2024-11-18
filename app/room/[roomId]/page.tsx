@@ -11,6 +11,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { io } from 'socket.io-client';
 import { getVideoData } from '@/app/libs/utils';
 import { NextResponse } from 'next/server';
+import Error from '@/app/components/Error';
 
 export default function Room() {
 	const { roomId }: { roomId: string } = useParams();
@@ -266,9 +267,9 @@ export default function Room() {
 				toggleSidebar={toggleSidebar}
 			/>
 			{error && (
-				<div className={styles['error-absolute']} onClick={dismissError}>
+				<Error dismiss={dismissError} isAbsoluteAtTop={true}>
 					{error}
-				</div>
+				</Error>
 			)}
 			<main
 				className={`${styles['main']} ${
@@ -303,9 +304,7 @@ export default function Room() {
 								<div className='absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-slate-900' />
 							)}
 							{error && !roomData.videoList.length && (
-								<div className={styles.error} onClick={dismissError}>
-									{error}
-								</div>
+								<Error dismiss={dismissError}>{error}</Error>
 							)}
 						</div>
 						<div
