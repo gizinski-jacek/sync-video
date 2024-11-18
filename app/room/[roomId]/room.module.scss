@@ -10,37 +10,6 @@
 	height: auto;
 }
 
-.error {
-	max-height: 25%;
-	overflow: auto;
-	margin: 5rem auto;
-	padding: 1rem;
-	font-size: 1.75rem;
-	font-weight: bold;
-	text-align: center;
-	background-color: theme('colors.slate.700');
-	border: 0.5rem solid theme('colors.red.600');
-	border-radius: 0.5rem;
-	cursor: pointer;
-}
-
-.error-absolute {
-	@extend .error;
-	width: unset;
-	height: unset;
-	margin: 0;
-	max-height: 100vh;
-	overflow: auto;
-	padding: 0.25rem;
-	border-width: 0.25rem;
-	border-radius: 0;
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	z-index: 200;
-}
-
 .sidebar {
 	display: grid;
 	grid-template-columns: 1fr;
