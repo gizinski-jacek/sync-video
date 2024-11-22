@@ -6,6 +6,9 @@ export function extractHostName(url: string): Hosts | undefined {
 	if (url.includes('m3u8')) {
 		return 'm3u8';
 	}
+	if (url.includes('youtu.be')) {
+		return 'youtube';
+	}
 	if (url.includes('dai.ly')) {
 		return 'dailymotion';
 	}
