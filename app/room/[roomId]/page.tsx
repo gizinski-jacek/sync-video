@@ -9,7 +9,7 @@ import Playlist from '@/app/components/Playlist';
 import ReactPlayer from 'react-player';
 import { useParams, useRouter } from 'next/navigation';
 import { io } from 'socket.io-client';
-import { getVideoData } from '@/app/libs/utils';
+import { formatFetchError, getVideoData } from '@/app/libs/utils';
 import { NextResponse } from 'next/server';
 import Error from '@/app/components/Error';
 
@@ -177,11 +177,8 @@ export default function Room() {
 			const data = await getVideoData(url);
 			setSearchResults(data);
 			setFetching(false);
-		} catch (error) {
-			setError(
-				(error as NextResponse).statusText ||
-					'Unknown fetching error. Make sure you selected correct source.'
-			);
+		} catch (error: unknown) {
+			setError(formatFetchError(error).statusText);
 			setSearchResults(null);
 			setFetching(false);
 		}
