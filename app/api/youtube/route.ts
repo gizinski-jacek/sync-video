@@ -6,11 +6,11 @@ import querystring from 'querystring';
 
 export async function GET(
 	req: NextRequest
-): Promise<NextResponse<VideoData[] | { error: string }>> {
+): Promise<NextResponse<VideoData[]>> {
 	try {
 		if (!process.env.YOUTUBE_API_KEY) {
 			console.error('Provide YOUTUBE_API_KEY env variables');
-			return NextResponse.json(
+			throw NextResponse.json(
 				{ error: 'Unknown server error' },
 				{ status: 500 }
 			);
@@ -18,7 +18,7 @@ export async function GET(
 		const { searchParams } = new URL(req.url);
 		const id = searchParams.get('id');
 		if (!id)
-			return NextResponse.json(
+			throw NextResponse.json(
 				{ error: 'Provide video link or Id' },
 				{ status: 400 }
 			);
@@ -32,7 +32,7 @@ export async function GET(
 			{ timeout: 5000 }
 		);
 		if (res.data.items.length === 0) {
-			return NextResponse.json({ error: 'No videos found' }, { status: 404 });
+			throw NextResponse.json({ error: 'No videos found' }, { status: 404 });
 		}
 		const data: VideoData[] = res.data.items.map((item) => {
 			return {
@@ -49,6 +49,6 @@ export async function GET(
 		});
 		return NextResponse.json(data, { status: 200 });
 	} catch (error: unknown) {
-		return formatFetchError(error);
+		throw formatFetchError(error);
 	}
 }

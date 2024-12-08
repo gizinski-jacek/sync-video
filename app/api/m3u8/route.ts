@@ -5,17 +5,17 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 export async function GET(
 	req: NextRequest
-): Promise<NextResponse<VideoData[] | { error: string }>> {
+): Promise<NextResponse<VideoData[]>> {
 	try {
 		const { searchParams } = new URL(req.url);
 		const id = searchParams.get('id');
 		if (!id)
-			return NextResponse.json(
+			throw NextResponse.json(
 				{ error: 'Provide video link or id' },
 				{ status: 400 }
 			);
 		// Checks whether the link is valid
-		const test = await axios.get(id);
+		await axios.get(id);
 		const data: VideoData = {
 			host: 'm3u8',
 			id: id,
@@ -28,6 +28,6 @@ export async function GET(
 		};
 		return NextResponse.json([data], { status: 200 });
 	} catch (error: unknown) {
-		return formatFetchError(error);
+		throw formatFetchError(error);
 	}
 }
