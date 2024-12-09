@@ -13,8 +13,16 @@ export default function App() {
 	async function handleCreateRoom(e: React.MouseEvent<HTMLButtonElement>) {
 		try {
 			e.preventDefault();
+			const API_URI =
+				process.env.NEXT_PUBLIC_NODE_ENV === 'production'
+					? process.env.NEXT_PUBLIC_API_URI
+					: process.env.NEXT_PUBLIC_API_URI_DEV;
+			if (!API_URI) {
+				setError('Environment setup error');
+				return;
+			}
 			const res: AxiosResponse<{ roomId: string }> = await axios.get(
-				`${process.env.NEXT_PUBLIC_API_URI}/api/create-room`,
+				`${API_URI}/api/create-room`,
 				{ timeout: 5000 }
 			);
 			router.push(`room/${res.data.roomId}`);

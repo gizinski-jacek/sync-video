@@ -40,10 +40,18 @@ export default function Room() {
 		if (!roomId) {
 			return;
 		}
-		const newSocket: SocketType = io(
-			`${process.env.NEXT_PUBLIC_API_URI}/rooms`,
-			{ query: { roomId }, withCredentials: true }
-		);
+		const API_URI =
+			process.env.NEXT_PUBLIC_NODE_ENV === 'production'
+				? process.env.NEXT_PUBLIC_API_URI
+				: process.env.NEXT_PUBLIC_API_URI_DEV;
+		if (!API_URI) {
+			setError('Environment setup error');
+			return;
+		}
+		const newSocket: SocketType = io(`${API_URI}/rooms`, {
+			query: { roomId },
+			withCredentials: true,
+		});
 		setSocket(newSocket);
 
 		return () => {
