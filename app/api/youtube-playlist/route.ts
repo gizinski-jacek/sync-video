@@ -6,7 +6,7 @@ import querystring from 'querystring';
 
 export async function GET(
 	req: NextRequest
-): Promise<NextResponse<VideoData[]>> {
+): Promise<NextResponse<VideoData[] | { error: string }>> {
 	try {
 		if (!process.env.YOUTUBE_API_KEY) {
 			console.error('Provide YOUTUBE_API_KEY env variables');
@@ -46,6 +46,6 @@ export async function GET(
 		});
 		return NextResponse.json(data, { status: 200 });
 	} catch (error: unknown) {
-		throw formatFetchError(error);
+		return formatFetchError(error);
 	}
 }

@@ -6,7 +6,7 @@ import querystring from 'querystring';
 
 export async function GET(
 	req: NextRequest
-): Promise<NextResponse<VideoData[]>> {
+): Promise<NextResponse<VideoData[] | { error: string }>> {
 	try {
 		if (!process.env.TWITCH_CLIENT_ID || !process.env.TWITCH_CLIENT_SECRET) {
 			console.error(
@@ -62,6 +62,6 @@ export async function GET(
 		});
 		return NextResponse.json(data, { status: 200 });
 	} catch (error: unknown) {
-		throw formatFetchError(error);
+		return formatFetchError(error);
 	}
 }

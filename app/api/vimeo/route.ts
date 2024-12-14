@@ -5,7 +5,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 export async function GET(
 	req: NextRequest
-): Promise<NextResponse<VideoData[]>> {
+): Promise<NextResponse<VideoData[] | { error: string }>> {
 	try {
 		if (!process.env.VIMEO_ACCESS_TOKEN) {
 			console.error('Provide VIMEO_ACCESS_TOKEN env variables');
@@ -40,6 +40,6 @@ export async function GET(
 		};
 		return NextResponse.json([data], { status: 200 });
 	} catch (error: unknown) {
-		throw formatFetchError(error);
+		return formatFetchError(error);
 	}
 }

@@ -5,7 +5,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 export async function GET(
 	req: NextRequest
-): Promise<NextResponse<VideoData[]>> {
+): Promise<NextResponse<VideoData[] | { error: string }>> {
 	try {
 		const { searchParams } = new URL(req.url);
 		const id = searchParams.get('id');
@@ -28,6 +28,6 @@ export async function GET(
 		};
 		return NextResponse.json([data], { status: 200 });
 	} catch (error: unknown) {
-		throw formatFetchError(error);
+		return formatFetchError(error);
 	}
 }
