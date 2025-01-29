@@ -10,7 +10,6 @@ import ReactPlayer from 'react-player';
 import { useParams, useRouter } from 'next/navigation';
 import { io } from 'socket.io-client';
 import { formatFetchError, getVideoData } from '@/app/libs/utils';
-import { NextResponse } from 'next/server';
 import Error from '@/app/components/Error';
 
 export default function Room() {
