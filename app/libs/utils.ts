@@ -96,7 +96,11 @@ export function extractVideoId(
 export async function getVideoData(url: string): Promise<VideoData[]> {
 	try {
 		if (!url) {
-			throw new Error('Provide video url');
+			throw new Error('Provide video link');
+		}
+		const urlRegEx = /^(https:|http:|www\.)\S*/gm;
+		if (!urlRegEx.test(url)) {
+			throw new Error('Provide a valid link');
 		}
 		const host = extractHostName(url);
 		if (!host) {
@@ -129,10 +133,18 @@ export function formatFetchError(error: unknown): NextResponse<{
 		);
 	} else {
 		return NextResponse.json(
-			{ error: (error as Error)?.message || 'Unknown server error' },
+			{
+				error:
+					(error as Error)?.message ||
+					(error as Response).statusText ||
+					'Unknown server error',
+			},
 			{
 				status: 500,
-				statusText: (error as Error)?.message || 'Unknown server error',
+				statusText:
+					(error as Error)?.message ||
+					(error as Response).statusText ||
+					'Unknown server error',
 			}
 		);
 	}
