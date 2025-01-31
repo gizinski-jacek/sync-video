@@ -30,7 +30,7 @@ export default function Navbar({
 	showChat,
 	toggleSidebar,
 }: Props) {
-	const [input, setInput] = useState<string>('');
+	const [userInput, setUserInput] = useState<string>('');
 
 	const searchRef = useRef<HTMLFormElement>(null);
 
@@ -49,10 +49,8 @@ export default function Navbar({
 
 	function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const value = e.target.value.trim();
-		setInput(value);
-		if (value) {
-			searchVideo(input);
-		} else {
+		setUserInput(value);
+		if (!value) {
 			clearSearchResults();
 		}
 	}
@@ -60,7 +58,7 @@ export default function Navbar({
 	function handleInputEnterKey(e: React.KeyboardEvent<HTMLInputElement>) {
 		if (e.key === 'Enter') {
 			e.preventDefault();
-			searchVideo(input);
+			searchVideo(userInput);
 		}
 	}
 
@@ -91,7 +89,7 @@ export default function Navbar({
 						type='text'
 						minLength={16}
 						maxLength={256}
-						value={input}
+						value={userInput}
 						onChange={handleInputChange}
 						onKeyDown={handleInputEnterKey}
 						onPaste={handlePasteEvent}
@@ -134,7 +132,10 @@ export default function Navbar({
 						</ul>
 					) : null}
 				</form>
-				<div className='m-1 cursor-pointer' onClick={() => searchVideo(input)}>
+				<div
+					className='m-1 cursor-pointer'
+					onClick={() => searchVideo(userInput)}
+				>
 					<svg
 						width='24px'
 						viewBox='0 -0.5 25 25'
