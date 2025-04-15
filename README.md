@@ -20,7 +20,7 @@ Github repo can be found [here](https://github.com/gizinski-jacek/sync-video).
 
 Backend API can be found [here](https://github.com/gizinski-jacek/sync-video-api).
 
-Live demo can be found on [Vercel](https://multi-viewer-one.vercel.app).
+Live demo can be found on [Vercel](https://sync-video-delta.vercel.app).
 
 ## Getting Started
 
