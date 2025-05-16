@@ -300,7 +300,7 @@ export default function Room() {
 				} flex flex-col`}
 			>
 				{roomData && (
-					<div className='flex-1 flex flex-col lg:flex-row gap-1 xs:m-1 lg:gap-2 lg:m-2'>
+					<div className='flex-1 flex flex-col lg:flex-row gap-1 m-1 lg:gap-2 lg:m-2'>
 						<div
 							className={`${styles['video']} flex-1 flex flex-col bg-slate-900 relative`}
 						>
