@@ -112,6 +112,16 @@ export default function Room() {
 			});
 		});
 
+		socket.on('clear_playlist', () => {
+			setRoomData((prevState) => {
+				if (prevState === null) return null;
+				return {
+					...prevState,
+					videoList: [],
+				};
+			});
+		});
+
 		socket.on('start_video', ({ videoProgress }) => {
 			playerRef.current?.seekTo(
 				videoProgress * playerRef.current?.getDuration()
@@ -202,6 +212,11 @@ export default function Room() {
 		socket.emit('video_removed', { roomId, video });
 	}
 
+	function handleClearPlaylist() {
+		if (!socket || !roomId) return;
+		socket.emit('clear_playlist', { roomId });
+	}
+
 	function handlePlayVideo() {
 		if (videoPlaying) return;
 		if (!socket?.id || !roomId) return;
@@ -250,6 +265,10 @@ export default function Room() {
 
 	function toggleSidebar() {
 		setShowPlaylist((prevState) => !prevState);
+	}
+
+	function hidePlaylist() {
+		setShowPlaylist(false);
 	}
 
 	function clearSearchResults() {
@@ -329,6 +348,8 @@ export default function Room() {
 								showPlaylist={showPlaylist}
 								playlist={roomData.videoList}
 								currentVideo={roomData?.videoList[0]}
+								closePlaylist={hidePlaylist}
+								clearPlaylist={handleClearPlaylist}
 								changeVideo={handleVideoChange}
 								removeVideo={handleRemoveChange}
 								reorderVideo={handleReorderVideo}

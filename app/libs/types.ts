@@ -34,6 +34,7 @@ type ServerToClientEvents = {
 	stop_video: () => void;
 	video_progress: (data: { videoProgress: number }) => void;
 	playback_rate_change: (data: { playbackRate: number }) => void;
+	clear_playlist: () => void;
 	change_video: (data: { videoList: VideoData[] }) => void;
 	reorder_video: (data: { videoList: VideoData[] }) => void;
 	video_ended: (data: { videoList: VideoData[] }) => void;
@@ -51,6 +52,7 @@ type ClientToServerEvents = {
 		roomId: string;
 		playbackRate: number;
 	}) => void;
+	clear_playlist: (data: { roomId: string }) => void;
 	change_video: (data: { roomId: string; video: VideoData }) => void;
 	reorder_video: (data: {
 		roomId: string;
