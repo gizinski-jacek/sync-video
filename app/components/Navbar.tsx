@@ -69,13 +69,13 @@ export default function Navbar({
 
 	return (
 		<nav className={showNavbar ? styles['navbar'] : styles['navbar-hidden']}>
-			<Link className='hidden xs:inline-block my-auto' href={'/'}>
+			<Link className='my-auto' href={'/'}>
 				SyncVid
 			</Link>
 			<div className='flex'>
 				<form
 					ref={searchRef}
-					className='flex-1 flex flex-row justify-between gap-2 relative w-[240px] sm:w-[360px] md:w-[480px] lg:w-[600px]'
+					className='flex flex-row justify-between gap-2 relative w-[240px] sm:w-[360px] md:w-[480px] lg:w-[600px]'
 					onSubmit={(e) => e.preventDefault()}
 				>
 					<input
