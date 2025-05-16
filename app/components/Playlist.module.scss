@@ -19,7 +19,8 @@
 
 	.controls {
 		display: flex;
-		justify-content: space-between;
+		flex-direction: column;
+		align-items: center;
 		gap: 1rem;
 		margin-bottom: 0.5rem;
 	}
@@ -119,6 +120,11 @@
 
 		&.visible {
 			display: flex;
+		}
+
+		.controls {
+			flex-direction: row;
+			justify-content: space-between;
 		}
 
 		hr {
