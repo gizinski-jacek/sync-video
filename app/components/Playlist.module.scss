@@ -17,6 +17,13 @@
 		display: grid;
 	}
 
+	.controls {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 0.5rem;
+	}
+
 	.video {
 		max-height: 90px;
 		display: flex;
@@ -25,7 +32,6 @@
 
 		p {
 			max-height: 90px;
-			padding-right: 8px;
 			overflow-y: auto;
 			scrollbar-width: thin;
 			line-height: 1.25rem;
